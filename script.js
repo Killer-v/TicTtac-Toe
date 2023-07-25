@@ -2,33 +2,29 @@ class TicTacToe {
     constructor(parent) {
         this.step = false;
 
-        const playerDiv = this.createPlayerDiv(parent);
+        const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
+
+        const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
+
         this.playerX = this.createPlayerX(playerDiv);
         this.playerO = this.createPlayerO(playerDiv);
 
-        const tictactoe = this.createMainDiv(parent);
+        const cellDiv = this.createMainDiv(tictactoeDiv, "cellDiv");
 
-        this.cell = this.createCell(tictactoe);
+        this.cell = this.createCell(cellDiv);
     }
 
-    createMainDiv(parent) {
+    createMainDiv(parentDiv, className) {
         const div = document.createElement("div");
-        div.classList.add('cellDiv');
-        parent.appendChild(div);
-        return div;
-    }
-
-    createPlayerDiv(parent) {
-        const div = document.createElement("div");
-        div.classList.add('playerDiv');
-        parent.appendChild(div);
+        div.classList.add( className );
+        parentDiv.appendChild(div);
         return div;
     }
 
     createPlayerX(playerDiv) {
         const playerX = document.createElement("div");
         playerX.className = 'playerX player';
-        playerX.innerHTML = "x";
+        playerX.innerHTML = "X";
 
         playerX.onclick = () => this.choosePlayer(playerX);
 
@@ -39,7 +35,7 @@ class TicTacToe {
     createPlayerO(playerDiv) {
         const playerO = document.createElement("div");
         playerO.className = 'playerO player';
-        playerO.innerHTML = "o";
+        playerO.innerHTML = "O";
 
         playerO.onclick = () => this.choosePlayer(playerO);
 
@@ -50,11 +46,14 @@ class TicTacToe {
     createCell(tictactoe) {
         for (let cellNum = 0; cellNum < 9; cellNum++) {
             const cell = document.createElement("div");
+            const cellP = document.createElement("p");
+
             cell.className = `cell cell${cellNum}`;
 
-            cell.onclick = () => this.onCellPress(cell);
+            cell.onclick = () => this.onCellPress(cell, cellP);
 
             tictactoe.appendChild(cell);
+            cell.appendChild(cellP);
         }
         console.log(this.cells)
     }
@@ -81,9 +80,9 @@ class TicTacToe {
         }
     }
 
-    onCellPress(cell) {
+    onCellPress(cell, cellP) {
         if (!this.step) {
-            cell.innerHTML = "x";
+            cellP.innerHTML = "x";
             cell.classList.add("x");
             console.log("x");
 
@@ -91,7 +90,7 @@ class TicTacToe {
 
             this.step = true;
         } else {
-            cell.innerHTML = "o";
+            cellP.innerHTML = "o";
             cell.classList.add("o");
             console.log("o");
 
