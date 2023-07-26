@@ -6,54 +6,43 @@ class TicTacToe {
 
         const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
 
-        this.playerX = this.createPlayerX(playerDiv);
-        this.playerO = this.createPlayerO(playerDiv);
+        this.playerX = this.createPlayer(playerDiv, 'playerX player', "X");
+        this.playerO = this.createPlayer(playerDiv, 'playerO player', "O");
 
         const cellDiv = this.createMainDiv(tictactoeDiv, "cellDiv");
 
-        this.cell = this.createCell(cellDiv);
+        this.createCell(cellDiv);
+        this.cells = document.getElementsByClassName("cell");
+
     }
 
     createMainDiv(parentDiv, className) {
         const div = document.createElement("div");
-        div.classList.add( className );
+        div.classList.add(className);
+
         parentDiv.appendChild(div);
         return div;
     }
 
-    createPlayerX(playerDiv) {
-        const playerX = document.createElement("div");
-        playerX.className = 'playerX player';
-        playerX.innerHTML = "X";
+    createPlayer(parentDiv, className, index) {
+        const player = document.createElement("div");
+        player.className = className;
+        player.innerHTML = index;
 
-        playerX.onclick = () => this.choosePlayer(playerX);
+        player.onclick = () => this.choosePlayer(player);
 
-        playerDiv.appendChild(playerX);
-        return playerX;
-    }
-
-    createPlayerO(playerDiv) {
-        const playerO = document.createElement("div");
-        playerO.className = 'playerO player';
-        playerO.innerHTML = "O";
-
-        playerO.onclick = () => this.choosePlayer(playerO);
-
-        playerDiv.appendChild(playerO);
-        return playerO;
+        parentDiv.appendChild(player);
+        return player;
     }
 
     createCell(tictactoe) {
         for (let cellNum = 0; cellNum < 9; cellNum++) {
             const cell = document.createElement("div");
-            const cellP = document.createElement("p");
-
             cell.className = `cell cell${cellNum}`;
 
-            cell.onclick = () => this.onCellPress(cell, cellP);
+            cell.onclick = () => this.onCellPress(cell);
 
             tictactoe.appendChild(cell);
-            cell.appendChild(cellP);
         }
         console.log(this.cells)
     }
@@ -61,43 +50,42 @@ class TicTacToe {
     choosePlayer(player) {
         if (player === this.playerX) {
             this.step = false;
-            player.style.background = "#b47023";
+            this.playerX.style.background = "#b47023";
 
             this.playerO.style.background = "#8ae2fc";
         } else
             if (player === this.playerO) {
                 this.step = true;
-                player.style.background = "#b47023";
+                this.playerO.style.background = "#b47023";
 
                 this.playerX.style.background = "#8ae2fc";
             }
     }
 
-    setCellClickHandlers() {
-        const cells = document.getElementsByClassName("cell");
-        for (const cell of cells) {
-            cell.onclick = () => this.onCellPress(cell);
-        }
-    }
-
-    onCellPress(cell, cellP) {
+    onCellPress(cell) {
         if (!this.step) {
-            cellP.innerHTML = "x";
+            cell.innerHTML = "x";
             cell.classList.add("x");
             console.log("x");
 
-            this.choosePlayer(this.playerX);
+            this.choosePlayer(this.playerO);
 
             this.step = true;
         } else {
-            cellP.innerHTML = "o";
+            cell.innerHTML = "o";
             cell.classList.add("o");
             console.log("o");
 
-            this.choosePlayer(this.playerO);
+            this.choosePlayer(this.playerX);
 
             this.step = false;
-        }
+        };
+        
+        if (this.checkDraw()) {
+            for (const cells of this.cells) {
+                cells.onclick = () => this.clearCells(this.cells);
+            }
+        };
 
         this.win();
     }
@@ -116,22 +104,21 @@ class TicTacToe {
 
         for (let i = 0; i < winningPositions.length; i++) {
             const [pos1, pos2, pos3] = winningPositions[i];
-            const cells = document.getElementsByClassName("cell");
 
             if (
-                cells[pos1].classList.contains("x") &&
-                cells[pos2].classList.contains("x") &&
-                cells[pos3].classList.contains("x") ||
-                cells[pos1].classList.contains("o") &&
-                cells[pos2].classList.contains("o") &&
-                cells[pos3].classList.contains("o")
+                this.cells[pos1].classList.contains("x") &&
+                this.cells[pos2].classList.contains("x") &&
+                this.cells[pos3].classList.contains("x") ||
+                this.cells[pos1].classList.contains("o") &&
+                this.cells[pos2].classList.contains("o") &&
+                this.cells[pos3].classList.contains("o")
             ) {
-                cells[pos1].style.color = '#ffd700';
-                cells[pos2].style.color = '#ffd700';
-                cells[pos3].style.color = '#ffd700';
+                this.cells[pos1].style.color = '#ffd700';
+                this.cells[pos2].style.color = '#ffd700';
+                this.cells[pos3].style.color = '#ffd700';
 
-                for (const cell of cells) {
-                    cell.onclick = () => this.clearCells(cells);
+                for (const cell of this.cells) {
+                    cell.onclick = () => this.clearCells();
                 }
 
                 console.log("win!!");
@@ -143,14 +130,27 @@ class TicTacToe {
         return false;
     }
 
-    clearCells(cells) {
-        for (const cell of cells) {
+    checkDraw() {
+        let filledCells = 0;
+
+        for (const cell of this.cells) {
+            if (cell.classList.contains("x") || cell.classList.contains("o")) {
+                filledCells++;
+            }
+        }
+
+        return filledCells === this.cells.length;
+    }
+
+    clearCells() {
+
+        for (const cell of this.cells) {
             cell.innerHTML = "";
             cell.classList.remove("o", "x");
             cell.style.color = "white";
-        }
 
-        this.setCellClickHandlers()
+            cell.onclick = () => this.onCellPress(cell);
+        }
 
         console.log("none");
     }
