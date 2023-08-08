@@ -4,15 +4,15 @@ class TicTacToe {
 
     const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
 
-    const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
-
-    this.playerX = this.createPlayer(playerDiv, "playerX player", "X");
-    this.playerO = this.createPlayer(playerDiv, "playerO player", "O");
+    this.player = this.createPlayer(tictactoeDiv, "player");
 
     const cellDiv = this.createMainDiv(tictactoeDiv, "cellDiv");
 
     this.createCell(cellDiv);
     this.cells = document.getElementsByClassName("cell");
+
+    this.buttonPlayAgain = this.createButton(tictactoeDiv);
+
   }
 
   createMainDiv(parentDiv, className) {
@@ -23,10 +23,10 @@ class TicTacToe {
     return div;
   }
 
-  createPlayer(parentDiv, className, index) {
+  createPlayer(parentDiv, className) {
     const player = document.createElement("div");
     player.className = className;
-    player.innerHTML = index;
+    player.innerHTML = "Your Turn";
 
     player.onclick = () => this.choosePlayer(player);
 
@@ -36,7 +36,8 @@ class TicTacToe {
 
   createCell(tictactoe) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = document.createElement("div");
+      const cell = document.createElement("img");
+      cell.src = 'img/empty-block.svg';
       cell.className = `cell cell${cellNum}`;
 
       cell.onclick = () => this.onCellPress(cell);
@@ -44,6 +45,17 @@ class TicTacToe {
       tictactoe.appendChild(cell);
     }
     console.log(this.cells);
+  }
+
+  createButton(tictactoeDiv) {
+    const button = document.createElement("img");
+    button.src = 'img/Button-play-Again.svg';
+    button.className = "button";
+
+    button.onclick = () => this.clearCells();
+
+    tictactoeDiv.appendChild(button);
+    return button;
   }
 
   choosePlayer(player) {
