@@ -19,10 +19,58 @@ body {
     height: 82%;
 }
 
-.player {
+@media (max-width: 216px) {
+    .tictactoeDiv {
+        padding: 15px;
+        height: 74%;
+    }
+}
+
+.playerDiv {
     padding-bottom: 30px;
-    font-size: 7vmin;
     text-align: center;
+}
+
+.player {
+    font-size: 47px;
+}
+
+.playerP {
+    color: rgba(173, 173, 173, 1);
+    font-size: 22px;
+    height: 30px;
+}
+
+@media (max-width: 362px) {
+    .player {
+        font-size: 37px;
+    }
+
+    .playerP {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 276px) {
+    .player {
+        font-size: 28px;
+    }
+
+    .playerP {
+        font-size: 12px;
+        height: 13px;
+    }
+}
+
+@media (max-width: 216px) {
+    .player {
+        font-size: 21px;
+    }
+
+    .playerP {
+        font-size: 11px;
+        height: 13px;
+    }
 }
 
 .cellDiv {
@@ -32,7 +80,7 @@ body {
     gap: 15px;
 }
 
-@media (max-width: 328px){
+@media (max-width: 328px) {
     .cellDiv {
         gap: 6px;
     }
@@ -47,7 +95,7 @@ body {
 }
 
 .button {
+    width: 0;
     padding-top: 30px;
-    width: 100%;
     height: auto;
 }

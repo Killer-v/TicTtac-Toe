@@ -1,15 +1,20 @@
 class TicTacToe {
   constructor(parent) {
     this.step = false;
+    this.allCellsFull = 0;
 
     const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
+    const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
 
-    this.player = this.createPlayer(tictactoeDiv, "player");
+    this.player = this.createPlayer(playerDiv, "player", "Your Turn");
+    this.comments = this.createPlayer(playerDiv, "playerP", "");
 
     const cellDiv = this.createMainDiv(tictactoeDiv, "cellDiv");
 
     this.createCell(cellDiv);
     this.cells = document.getElementsByClassName("cell");
+    this.fullCells = document.getElementsByClassName("full");
+    this.emptyCells = document.getElementsByClassName("empty");
 
     this.buttonPlayAgain = this.createButton(tictactoeDiv);
 
@@ -23,12 +28,10 @@ class TicTacToe {
     return div;
   }
 
-  createPlayer(parentDiv, className) {
+  createPlayer(parentDiv, className, innerHTML) {
     const player = document.createElement("div");
     player.className = className;
-    player.innerHTML = "Your Turn";
-
-    player.onclick = () => this.choosePlayer(player);
+    player.innerHTML = innerHTML;
 
     parentDiv.appendChild(player);
     return player;
@@ -38,7 +41,7 @@ class TicTacToe {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
       const cell = document.createElement("img");
       cell.src = 'img/empty-block.svg';
-      cell.className = `cell cell${cellNum}`;
+      cell.className = `cell full`;
 
       cell.onclick = () => this.onCellPress(cell);
 
@@ -58,46 +61,35 @@ class TicTacToe {
     return button;
   }
 
-  choosePlayer(player) {
-    if (player === this.playerX) {
-      this.step = false;
-      this.playerX.style.background = "#b47023";
-
-      this.playerO.style.background = "#8ae2fc";
-    } else if (player === this.playerO) {
-      this.step = true;
-      this.playerO.style.background = "#b47023";
-
-      this.playerX.style.background = "#8ae2fc";
-    }
-  }
-
   onCellPress(cell) {
-    if (!this.step) {
-      cell.innerHTML = "x";
-      cell.classList.add("x");
+    if (!this.step && cell.classList.contains("full")) {
+      cell.src = 'img/full-block-X.svg';
+      cell.classList.add("x", "empty");
+      cell.classList.remove("full");
+      this.player.innerHTML = "Please Wait";
+
+      for (const cell of this.fullCells) {
+        cell.src = 'img/empty-block-wait.svg';
+      };
+
       console.log("x");
-
-      this.choosePlayer(this.playerO);
-
       this.step = true;
-    } else {
-      cell.innerHTML = "o";
-      cell.classList.add("o");
+    } else if (this.step && cell.classList.contains("full")) {
+      cell.src = 'img/full-block-O.svg';
+      cell.classList.add("o", "empty");
+      cell.classList.remove("full");
+
+      this.player.innerHTML = "Your Turn";
+
+      for (const cell of this.fullCells) {
+        cell.src = 'img/empty-block.svg';
+      };
+
       console.log("o");
-
-      this.choosePlayer(this.playerX);
-
       this.step = false;
     }
 
-    // это что-то странное тут...
-    if (this.checkDraw()) {
-      for (const cells of this.cells) {
-        cells.onclick = () => this.clearCells(this.cells);
-      }
-    }
-
+    this.checkDraw();
     this.win();
   }
 
@@ -117,25 +109,40 @@ class TicTacToe {
       const [pos1, pos2, pos3] = winningPositions[i];
 
       if (
-        (this.cells[pos1].classList.contains("x") &&
-          this.cells[pos2].classList.contains("x") &&
-          this.cells[pos3].classList.contains("x")) ||
-        (this.cells[pos1].classList.contains("o") &&
-          this.cells[pos2].classList.contains("o") &&
-          this.cells[pos3].classList.contains("o"))
+        this.cells[pos1].classList.contains("x") &&
+        this.cells[pos2].classList.contains("x") &&
+        this.cells[pos3].classList.contains("x")
       ) {
-        this.cells[pos1].style.color = "#ffd700";
-        this.cells[pos2].style.color = "#ffd700";
-        this.cells[pos3].style.color = "#ffd700";
+        this.player.innerHTML = "You Won!";
+        this.player.style.color = "rgba(70, 163, 255, 1)";
+        this.comments.innerHTML = "Congartulations";
+        this.buttonPlayAgain.style.width = "100%";
 
-        // это надо в отдельный метод и можно просто document.onclick
-        // но в новом дизайне там помоему кнопка будет для этого
+        for (const cell of this.fullCells) {
+          cell.classList.remove("full");
+        };
+
+        console.log("win!!X");
+        return true;
+      } else if (
+        this.cells[pos1].classList.contains("o") &&
+        this.cells[pos2].classList.contains("o") &&
+        this.cells[pos3].classList.contains("o")
+      ) {
+        this.player.innerHTML = "You Lost!";
+        this.player.style.color = "rgba(255, 130, 126, 1)";
+        this.comments.innerHTML = "Good luck next time";
+        this.buttonPlayAgain.style.width = "100%";
+
+        for (const cell of this.fullCells) {
+          cell.src = 'img/empty-block-wait.svg';
+        };
+
         for (const cell of this.cells) {
-          cell.onclick = () => this.clearCells();
-        }
+          cell.classList.remove("full");
+        };
 
-        console.log("win!!");
-
+        console.log("win!!O");
         return true;
       }
     }
@@ -144,27 +151,36 @@ class TicTacToe {
   }
 
   checkDraw() {
-    let filledCells = 0;
-
     for (const cell of this.cells) {
       if (cell.classList.contains("x") || cell.classList.contains("o")) {
-        filledCells++;
+
+        this.allCellsFull++;
+        console.log(this.allCellsFull);
+        break;
       }
     }
 
-    return filledCells === this.cells.length;
+    if (this.allCellsFull === 9) {
+      this.player.innerHTML = "Draw!";
+      this.comments.innerHTML = "It’s a draw";
+      this.buttonPlayAgain.style.width = "100%";
+    }
   }
 
   clearCells() {
     for (const cell of this.cells) {
-      cell.innerHTML = "";
+      cell.src = 'img/empty-block.svg';
+      cell.classList.add("full");
       cell.classList.remove("o", "x");
-      cell.style.color = "white";
-
-      cell.onclick = () => this.onCellPress(cell);
     }
 
-    console.log("none");
+    this.player.innerHTML = "Your Turn";
+    this.comments.innerHTML = "";
+    this.buttonPlayAgain.style.width = "0";
+    this.allCellsFull = 0;
+    this.step = false;
+
+    console.log("clear");
   }
 }
 
