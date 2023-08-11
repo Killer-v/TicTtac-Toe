@@ -2,10 +2,14 @@ class TicTacToe {
   constructor(parent) {
     this.step = false;
     this.allCellsFull = 0;
+    this.topic = true;
 
     const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
-    const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
 
+    this.buttonTopic = this.createMainDiv(tictactoeDiv, "buttonTopic");
+    this.buttonTopic.onclick = () => this.buttonTopicOnclick();
+
+    const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
     this.player = this.createPlayer(playerDiv, "player", "Your Turn");
     this.comments = this.createPlayer(playerDiv, "playerP", "");
 
@@ -59,6 +63,20 @@ class TicTacToe {
 
     tictactoeDiv.appendChild(button);
     return button;
+  }
+
+  buttonTopicOnclick() {
+    let style = document.getElementById("style");
+
+    if (style.getAttribute("href") == "style/style.css") {
+      style.href = "style/styleDark.css";
+      this.topic = false;
+      console.log(this.topic);
+    } else {
+      style.href = "style/style.css";
+      this.topic = true;
+      console.log(this.topic);
+    }
   }
 
   onCellPress(cell) {
@@ -182,6 +200,10 @@ class TicTacToe {
     this.step = false;
 
     console.log("clear");
+  }
+
+  checkTopic() {
+
   }
 }
 

@@ -26,6 +26,12 @@ body {
     }
 }
 
+.buttonTopic {
+    width: 15px;
+    height: 15px;
+    background-color: brown;
+}
+
 .playerDiv {
     padding-bottom: 30px;
     text-align: center;
