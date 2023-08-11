@@ -175,6 +175,7 @@ class TicTacToe {
     }
 
     this.player.innerHTML = "Your Turn";
+    this.player.style.color = "black";
     this.comments.innerHTML = "";
     this.buttonPlayAgain.style.width = "0";
     this.allCellsFull = 0;
