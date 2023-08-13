@@ -3,6 +3,7 @@ body {
     height: 100vh;
     margin: 0;
     font-family: cursive;
+    background-color: #000;
 }
 
 #parent {
@@ -27,9 +28,8 @@ body {
 }
 
 .buttonTopic {
-    width: 15px;
-    height: 15px;
-    background-color: brown;
+    width: 12%;
+    height: auto;
 }
 
 .playerDiv {
@@ -39,6 +39,7 @@ body {
 
 .player {
     font-size: 47px;
+    color: rgba(227, 227, 227, 1);
 }
 
 .playerP {

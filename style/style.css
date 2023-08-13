@@ -27,9 +27,8 @@ body {
 }
 
 .buttonTopic {
-    width: 15px;
-    height: 15px;
-    background-color: brown;
+    width: 12%;
+    height: auto;
 }
 
 .playerDiv {

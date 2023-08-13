@@ -6,8 +6,7 @@ class TicTacToe {
 
     const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
 
-    this.buttonTopic = this.createMainDiv(tictactoeDiv, "buttonTopic");
-    this.buttonTopic.onclick = () => this.buttonTopicOnclick();
+    this.buttonTopic = this.createButtonTopic(tictactoeDiv);
 
     const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
     this.player = this.createPlayer(playerDiv, "player", "Your Turn");
@@ -44,7 +43,7 @@ class TicTacToe {
   createCell(tictactoe) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
       const cell = document.createElement("img");
-      cell.src = 'img/empty-block.svg';
+      cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
       cell.className = `cell full`;
 
       cell.onclick = () => this.onCellPress(cell);
@@ -52,6 +51,17 @@ class TicTacToe {
       tictactoe.appendChild(cell);
     }
     console.log(this.cells);
+  }
+
+  createButtonTopic(tictactoeDiv) {
+    const buttonTopic = document.createElement("img");
+    buttonTopic.src = 'img/buttonTopic.svg';
+    buttonTopic.className = "buttonTopic";
+
+    buttonTopic.onclick = () => this.buttonTopicOnclick();
+
+    tictactoeDiv.appendChild(buttonTopic);
+    return buttonTopic;
   }
 
   createButton(tictactoeDiv) {
@@ -70,37 +80,65 @@ class TicTacToe {
 
     if (style.getAttribute("href") == "style/style.css") {
       style.href = "style/styleDark.css";
+
+      this.buttonTopic.src = 'img/darkButtonTopic.svg';
+
+      this.buttonPlayAgain.src = 'img/darkButton-play-Again.svg';
+      
+      for (const cell of this.fullCells) {
+        cell.src = 'img/empty-darkBlock.svg';
+      };
+
       this.topic = false;
       console.log(this.topic);
     } else {
       style.href = "style/style.css";
+
+      this.buttonTopic.src = 'img/buttonTopic.svg';
+
+      this.buttonPlayAgain.src = 'img/Button-play-Again.svg';
+
+      for (const cell of this.fullCells) {
+        cell.src = 'img/empty-block.svg';
+      };
+
       this.topic = true;
       console.log(this.topic);
     }
   }
 
+  checkTopic(light, dark) {
+    if (this.topic === true){
+      console.log("light");
+      return light;
+    } else {
+      console.log("dark");
+      return dark;
+    }
+  }
+
   onCellPress(cell) {
     if (!this.step && cell.classList.contains("full")) {
-      cell.src = 'img/full-block-X.svg';
+      cell.src = this.checkTopic('img/full-block-X.svg', 'img/full-darkBlock-X.svg');
       cell.classList.add("x", "empty");
       cell.classList.remove("full");
       this.player.innerHTML = "Please Wait";
 
       for (const cell of this.fullCells) {
-        cell.src = 'img/empty-block-wait.svg';
+        cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
       };
 
       console.log("x");
       this.step = true;
     } else if (this.step && cell.classList.contains("full")) {
-      cell.src = 'img/full-block-O.svg';
+      cell.src = this.checkTopic('img/full-block-O.svg', 'img/full-darkBlock-O.svg');
       cell.classList.add("o", "empty");
       cell.classList.remove("full");
 
       this.player.innerHTML = "Your Turn";
 
       for (const cell of this.fullCells) {
-        cell.src = 'img/empty-block.svg';
+        cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
       };
 
       console.log("o");
@@ -137,7 +175,7 @@ class TicTacToe {
         this.buttonPlayAgain.style.width = "100%";
 
         for (const cell of this.fullCells) {
-          cell.classList.remove("full");
+          cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
         };
 
         console.log("win!!X");
@@ -153,11 +191,7 @@ class TicTacToe {
         this.buttonPlayAgain.style.width = "100%";
 
         for (const cell of this.fullCells) {
-          cell.src = 'img/empty-block-wait.svg';
-        };
-
-        for (const cell of this.cells) {
-          cell.classList.remove("full");
+          cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
         };
 
         console.log("win!!O");
@@ -187,23 +221,19 @@ class TicTacToe {
 
   clearCells() {
     for (const cell of this.cells) {
-      cell.src = 'img/empty-block.svg';
+      cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
       cell.classList.add("full");
       cell.classList.remove("o", "x");
     }
 
     this.player.innerHTML = "Your Turn";
-    this.player.style.color = "black";
+    this.player.style.color = this.checkTopic('black', 'white');
     this.comments.innerHTML = "";
     this.buttonPlayAgain.style.width = "0";
     this.allCellsFull = 0;
     this.step = false;
 
     console.log("clear");
-  }
-
-  checkTopic() {
-
   }
 }
 
