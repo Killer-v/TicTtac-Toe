@@ -14,6 +14,8 @@ body {
     justify-content: center;
 }
 
+
+
 .tictactoeDiv {
     padding: 30px;
     height: 82%;
@@ -27,8 +29,12 @@ body {
 }
 
 .buttonTopic {
-    width: 12%;
-    height: auto;
+    background-image: url(/img/buttonTopic.svg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    width: 11%;
+    height: 7%;
+    
 }
 
 .playerDiv {
@@ -100,7 +106,10 @@ body {
 }
 
 .button {
-    width: 0;
+    background-image: url(/img/Button-play-Again.svg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    width: 100%;
     padding-top: 30px;
     height: auto;
 }

@@ -4,40 +4,40 @@ class TicTacToe {
     this.allCellsFull = 0;
     this.topic = true;
 
-    const tictactoeDiv = this.createMainDiv(parent, "tictactoeDiv");
+    const tictactoeDiv = this.createMainDiv("tictactoeDiv");
+    parent.appendChild(tictactoeDiv);
 
-    this.buttonTopic = this.createButtonTopic(tictactoeDiv);
+    this.buttonTopic = this.createButton("buttonTopic", () => this.buttonTopicOnclick());
+    tictactoeDiv.appendChild(this.buttonTopic);
 
-    const playerDiv = this.createMainDiv(tictactoeDiv, "playerDiv");
-    this.player = this.createPlayer(playerDiv, "player", "Your Turn");
-    this.comments = this.createPlayer(playerDiv, "playerP", "");
+    const playerDiv = this.createMainDiv("playerDiv");
+    tictactoeDiv.appendChild(playerDiv);
 
-    const cellDiv = this.createMainDiv(tictactoeDiv, "cellDiv");
+    this.player = this.createMainDiv("player");
+    this.player.innerHTML = "Your Turn";
+    playerDiv.appendChild(this.player);
+
+    this.comments = this.createMainDiv("playerP");
+    playerDiv.appendChild(this.comments);
+
+    const cellDiv = this.createMainDiv("cellDiv");
+    tictactoeDiv.appendChild(cellDiv);
 
     this.createCell(cellDiv);
     this.cells = document.getElementsByClassName("cell");
     this.fullCells = document.getElementsByClassName("full");
     this.emptyCells = document.getElementsByClassName("empty");
 
-    this.buttonPlayAgain = this.createButton(tictactoeDiv);
+    this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
+    tictactoeDiv.appendChild(this.buttonPlayAgain);
 
   }
 
-  createMainDiv(parentDiv, className) {
+  createMainDiv(className) {
     const div = document.createElement("div");
     div.classList.add(className);
 
-    parentDiv.appendChild(div);
     return div;
-  }
-
-  createPlayer(parentDiv, className, innerHTML) {
-    const player = document.createElement("div");
-    player.className = className;
-    player.innerHTML = innerHTML;
-
-    parentDiv.appendChild(player);
-    return player;
   }
 
   createCell(tictactoe) {
@@ -53,25 +53,12 @@ class TicTacToe {
     console.log(this.cells);
   }
 
-  createButtonTopic(tictactoeDiv) {
-    const buttonTopic = document.createElement("img");
-    buttonTopic.src = 'img/buttonTopic.svg';
-    buttonTopic.className = "buttonTopic";
+  createButton(className, onclick) {
+    const button = document.createElement("div");
+    button.className = className;
 
-    buttonTopic.onclick = () => this.buttonTopicOnclick();
+    button.onclick = onclick;
 
-    tictactoeDiv.appendChild(buttonTopic);
-    return buttonTopic;
-  }
-
-  createButton(tictactoeDiv) {
-    const button = document.createElement("img");
-    button.src = 'img/Button-play-Again.svg';
-    button.className = "button";
-
-    button.onclick = () => this.clearCells();
-
-    tictactoeDiv.appendChild(button);
     return button;
   }
 
