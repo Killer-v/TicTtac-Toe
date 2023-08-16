@@ -2,19 +2,20 @@ class TicTacToe {
   constructor(parent) {
     this.step = false;
     this.allCellsFull = 0;
-    this.topic = true;
+    this.style = "light";
+    this.parent = parent;
 
     const tictactoeDiv = this.createMainDiv("tictactoeDiv");
     parent.appendChild(tictactoeDiv);
 
-    this.buttonTopic = this.createButton("buttonTopic", () => this.buttonTopicOnclick());
+    this.buttonTopic = this.createButton("buttonTopic", () => this.buttonChangeStyle());
     tictactoeDiv.appendChild(this.buttonTopic);
 
     const playerDiv = this.createMainDiv("playerDiv");
     tictactoeDiv.appendChild(playerDiv);
 
     this.player = this.createMainDiv("player");
-    this.player.innerHTML = "Your Turn";
+    this.player.innerHTML = "X Turn";
     playerDiv.appendChild(this.player);
 
     this.comments = this.createMainDiv("playerP");
@@ -42,8 +43,7 @@ class TicTacToe {
 
   createCell(tictactoe) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = document.createElement("img");
-      cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
+      const cell = document.createElement("div");
       cell.className = `cell full`;
 
       cell.onclick = () => this.onCellPress(cell);
@@ -62,70 +62,40 @@ class TicTacToe {
     return button;
   }
 
-  buttonTopicOnclick() {
-    let style = document.getElementById("style");
+  buttonChangeStyle() {
+    if (this.style === "light") {
+      this.parent.classList.add("dark");
 
-    if (style.getAttribute("href") == "style/style.css") {
-      style.href = "style/styleDark.css";
-
-      this.buttonTopic.src = 'img/darkButtonTopic.svg';
-
-      this.buttonPlayAgain.src = 'img/darkButton-play-Again.svg';
-      
-      for (const cell of this.fullCells) {
-        cell.src = 'img/empty-darkBlock.svg';
-      };
-
-      this.topic = false;
-      console.log(this.topic);
+      this.style = "black";
+      console.log(this.style);
     } else {
-      style.href = "style/style.css";
+      this.parent.classList.remove("dark");
 
-      this.buttonTopic.src = 'img/buttonTopic.svg';
-
-      this.buttonPlayAgain.src = 'img/Button-play-Again.svg';
-
-      for (const cell of this.fullCells) {
-        cell.src = 'img/empty-block.svg';
-      };
-
-      this.topic = true;
-      console.log(this.topic);
-    }
-  }
-
-  checkTopic(light, dark) {
-    if (this.topic === true){
-      console.log("light");
-      return light;
-    } else {
-      console.log("dark");
-      return dark;
+      this.style = "light";
+      console.log(this.style);
     }
   }
 
   onCellPress(cell) {
     if (!this.step && cell.classList.contains("full")) {
-      cell.src = this.checkTopic('img/full-block-X.svg', 'img/full-darkBlock-X.svg');
-      cell.classList.add("x", "empty");
+      cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
-      this.player.innerHTML = "Please Wait";
+      this.player.innerHTML = "O Turn";
 
       for (const cell of this.fullCells) {
-        cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
+        cell.classList.add("cellWait");
       };
 
       console.log("x");
       this.step = true;
     } else if (this.step && cell.classList.contains("full")) {
-      cell.src = this.checkTopic('img/full-block-O.svg', 'img/full-darkBlock-O.svg');
-      cell.classList.add("o", "empty");
-      cell.classList.remove("full");
+      cell.classList.add("o", "empty", "stepO");
+      cell.classList.remove("cellWait", "full");
 
-      this.player.innerHTML = "Your Turn";
+      this.player.innerHTML = "X Turn";
 
       for (const cell of this.fullCells) {
-        cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
+        cell.classList.remove("cellWait");
       };
 
       console.log("o");
@@ -136,7 +106,7 @@ class TicTacToe {
     this.win();
   }
 
-  win() {
+  winningPositions(winningMark) {
     let winningPositions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -152,42 +122,46 @@ class TicTacToe {
       const [pos1, pos2, pos3] = winningPositions[i];
 
       if (
-        this.cells[pos1].classList.contains("x") &&
-        this.cells[pos2].classList.contains("x") &&
-        this.cells[pos3].classList.contains("x")
-      ) {
-        this.player.innerHTML = "You Won!";
-        this.player.style.color = "rgba(70, 163, 255, 1)";
-        this.comments.innerHTML = "Congartulations";
-        this.buttonPlayAgain.style.width = "100%";
+        this.cells[pos1].classList.contains(winningMark) &&
+        this.cells[pos2].classList.contains(winningMark) &&
+        this.cells[pos3].classList.contains(winningMark)
+        ) {
 
-        for (const cell of this.fullCells) {
-          cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
-        };
-
-        console.log("win!!X");
         return true;
-      } else if (
-        this.cells[pos1].classList.contains("o") &&
-        this.cells[pos2].classList.contains("o") &&
-        this.cells[pos3].classList.contains("o")
-      ) {
-        this.player.innerHTML = "You Lost!";
-        this.player.style.color = "rgba(255, 130, 126, 1)";
-        this.comments.innerHTML = "Good luck next time";
-        this.buttonPlayAgain.style.width = "100%";
 
-        for (const cell of this.fullCells) {
-          cell.src = this.checkTopic('img/empty-block-wait.svg', 'img/empty-darkBlock-wait.svg');
-        };
-
-        console.log("win!!O");
-        return true;
-      }
+      } 
     }
-
+    
     return false;
   }
+
+  win() {
+    if (this.winningPositions("x")) {
+      this.player.innerHTML = `X Won!`;
+      this.parent.classList.add("win");
+      this.comments.innerHTML = "Congartulations";
+
+      for (const cell of this.fullCells) {
+        cell.classList.remove("cellWait");
+      };
+
+      console.log("win!!X");
+      return true;
+    } else if (this.winningPositions("o")) {
+      this.player.innerHTML = "O Won!";
+      this.parent.classList.add("win");
+      this.comments.innerHTML = "Congartulations";
+
+      for (const cell of this.fullCells) {
+        cell.classList.remove("cellWait");
+      };
+
+      console.log("win!!O");
+      return true;
+    }
+  }
+
+
 
   checkDraw() {
     for (const cell of this.cells) {
@@ -202,21 +176,19 @@ class TicTacToe {
     if (this.allCellsFull === 9) {
       this.player.innerHTML = "Draw!";
       this.comments.innerHTML = "It’s a draw";
-      this.buttonPlayAgain.style.width = "100%";
+      this.parent.classList.add("draw");
     }
   }
 
   clearCells() {
     for (const cell of this.cells) {
-      cell.src = this.checkTopic('img/empty-block.svg', 'img/empty-darkBlock.svg');
       cell.classList.add("full");
-      cell.classList.remove("o", "x");
+      cell.classList.remove("o", "x", "stepX", "stepO", "empty");
     }
 
-    this.player.innerHTML = "Your Turn";
-    this.player.style.color = this.checkTopic('black', 'white');
+    this.parent.classList.remove("win", "draw");
+    this.player.innerHTML = "X Turn";
     this.comments.innerHTML = "";
-    this.buttonPlayAgain.style.width = "0";
     this.allCellsFull = 0;
     this.step = false;
 

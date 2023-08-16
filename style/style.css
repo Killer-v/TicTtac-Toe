@@ -14,6 +14,10 @@ body {
     justify-content: center;
 }
 
+.dark {
+    background-color: black;
+}
+
 
 
 .tictactoeDiv {
@@ -37,51 +41,32 @@ body {
     
 }
 
+.dark .buttonTopic {
+    background-image: url(/img/darkButtonTopic.svg);
+}
+
 .playerDiv {
-    padding-bottom: 30px;
+    width: 41vh;
+    padding: 2% 0;
     text-align: center;
 }
 
 .player {
-    font-size: 47px;
+    font-size: 7vh;
+}
+
+.dark .player {
+    color: rgba(227, 227, 227, 1);
+}
+
+.win .player {
+    color: rgba(70, 163, 255, 1);
 }
 
 .playerP {
     color: rgba(173, 173, 173, 1);
-    font-size: 22px;
-    height: 30px;
-}
-
-@media (max-width: 362px) {
-    .player {
-        font-size: 37px;
-    }
-
-    .playerP {
-        font-size: 16px;
-    }
-}
-
-@media (max-width: 276px) {
-    .player {
-        font-size: 28px;
-    }
-
-    .playerP {
-        font-size: 12px;
-        height: 13px;
-    }
-}
-
-@media (max-width: 216px) {
-    .player {
-        font-size: 21px;
-    }
-
-    .playerP {
-        font-size: 11px;
-        height: 13px;
-    }
+    font-size: 4vh;
+    height: 7vh;
 }
 
 .cellDiv {
@@ -89,20 +74,57 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: 15px;
+    max-height: 60vh;
 }
 
 @media (max-width: 328px) {
+    .cellDiv {
+        gap: 6px;
+        width: 86vw;
+    }
+}
+@media (max-height: 463px) {
     .cellDiv {
         gap: 6px;
     }
 }
 
 .cell {
+    background-image: url(/img/empty-block.svg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
     width: 100%;
-    position: relative;
+    height: 0;
+    padding-bottom: 100%;
     margin: 0;
-    text-align: center;
-    font-size: 30px;
+}
+
+.dark .cell {
+    background-image: url(/img/empty-darkBlock.svg);
+}
+
+.stepX {
+    background-image: url(/img/full-block-X.svg);
+}
+
+.dark .stepX {
+    background-image: url(/img/full-darkBlock-X.svg);
+}
+
+.stepO {
+    background-image: url(/img/full-block-O.svg);
+}
+
+.dark .stepO {
+    background-image: url(/img/full-darkBlock-O.svg);
+}
+
+.cellWait {
+    background-image: url(/img/empty-block-wait.svg);
+}
+
+.dark .cellWait {
+    background-image: url(/img/empty-darkBlock-wait.svg);
 }
 
 .button {
@@ -110,6 +132,19 @@ body {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     width: 100%;
+    height: 30px;
     padding-top: 30px;
-    height: auto;
+    display: none;
+}
+
+.dark .button {
+    background-image: url(/img/darkButton-play-Again.svg);
+}
+
+.win .button {
+    display: block;
+}
+
+.draw .button {
+    display: block;
 }
