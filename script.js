@@ -9,7 +9,7 @@ class TicTacToe {
     // TODO: move variables declaration to the top of the class
     this.step = false;
     this.allCellsFull = 0;
-    this.style = "light";
+    this.style = "light"; // get this variable from local storage 'localStorage.getItem('style');'
     this.parent = parent;
 
     const tictactoeDiv = this.createMainDiv("tictactoeDiv");
@@ -91,6 +91,8 @@ class TicTacToe {
       this.style = "light";
       console.log(this.style);
     }
+
+    // TODO: save style to the local storage: 'localStorage.setItem('style', this.style);'
   }
 
   onCellPress(cell) {
