@@ -1,51 +1,42 @@
 class TicTacToe {
-  // TODO: move variables declaration to the top of the class
-  // step = false;
-  // allCellsFull = 0;
-  // style = "light";
-  // parent = null;
+  step = false;
+  allCellsFull = 0;
+  style = localStorage.getItem('style');
+  cells = [];
 
   constructor(parent) {
-    // TODO: move variables declaration to the top of the class
-    this.step = false;
-    this.allCellsFull = 0;
-    this.style = "light"; // get this variable from local storage 'localStorage.getItem('style');'
     this.parent = parent;
 
-    const tictactoeDiv = this.createMainDiv("tictactoeDiv");
+    const tictactoeDiv = this.createDiv("tictactoeDiv");
     parent.appendChild(tictactoeDiv);
 
     this.buttonTopic = this.createButton("buttonTopic", () =>
-      this.buttonChangeStyle()
+      this.changeStyle()
     );
     tictactoeDiv.appendChild(this.buttonTopic);
 
-    const playerDiv = this.createMainDiv("playerDiv");
+    const playerDiv = this.createDiv("playerDiv");
     tictactoeDiv.appendChild(playerDiv);
 
-    this.player = this.createMainDiv("player");
+    this.player = this.createDiv("player");
     this.player.innerHTML = "X Turn";
     playerDiv.appendChild(this.player);
 
-    this.comments = this.createMainDiv("playerP");
+    this.comments = this.createDiv("playerP");
     playerDiv.appendChild(this.comments);
 
-    const cellDiv = this.createMainDiv("cellDiv");
+    const cellDiv = this.createDiv("cellDiv");
     tictactoeDiv.appendChild(cellDiv);
 
-    this.createCell(cellDiv);
-    // TODO: no need to use getElementsByClassName, just add elements to the arrays when you create them
-    // TODO: move this.cells, this.fullCells, this.emptyCells to the createCells method
-    this.cells = document.getElementsByClassName("cell");
-    this.fullCells = document.getElementsByClassName("full");
-    this.emptyCells = document.getElementsByClassName("empty"); // this is probably empty here, as you don't have any empty cells yet so no need
+    this.createCells(cellDiv);
+    
+    this.fullCells = this.cells.filter(cell => cell.classList.contains("full"));
 
     this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
     tictactoeDiv.appendChild(this.buttonPlayAgain);
   }
 
-  // TODO: rename to 'createDiv'
-  createMainDiv(className) {
+  createDiv(className) {
     const div = document.createElement("div");
     div.classList.add(className);
 
@@ -53,24 +44,21 @@ class TicTacToe {
   }
 
   // TODO: rename to 'createTicTacToe' variable to cellsDiv
-  // TODO: rename to 'createCell' method to 'createCells' as it creates not only one cell but 9
-  createCell(tictactoe) {
+  createCells(tictactoe) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = document.createElement("div"); // TODO: use 'createButton' method instead
-      cell.className = `cell full`;
-
-      cell.onclick = () => this.onCellPress(cell);
+      const cell = this.createButton("cell full", () =>
+        this.onCellPress(cell)
+      );
 
       tictactoe.appendChild(cell);
 
-      // TODO: push cell to the array here instead using getElementsByClassName
-      // this.cells.push(cell);
+      this.cells.push(cell);
     }
     console.log(this.cells);
   }
 
   createButton(className, onclick) {
-    const button = document.createElement("div"); // TODO: use document.createElement("button")
+    const button = document.createElement("button");
     button.className = className;
 
     button.onclick = onclick;
@@ -78,21 +66,19 @@ class TicTacToe {
     return button;
   }
 
-  // TODO: rename to 'changeStyle'
-  buttonChangeStyle() {
+  changeStyle() {
     if (this.style === "light") {
       this.parent.classList.add("dark");
 
-      this.style = "black";
+      this.style = localStorage.setItem('style', this.style);
       console.log(this.style);
     } else {
       this.parent.classList.remove("dark");
 
-      this.style = "light";
+      this.style = localStorage.setItem('style', this.style);
       console.log(this.style);
     }
 
-    // TODO: save style to the local storage: 'localStorage.setItem('style', this.style);'
   }
 
   onCellPress(cell) {
@@ -103,6 +89,10 @@ class TicTacToe {
 
       for (const cell of this.fullCells) {
         cell.classList.add("cellWait");
+      }
+      const index = this.cells.indexOf(cell);
+      if (index !== -1) {
+        this.cells.splice(index, 1);
       }
 
       console.log("x");
@@ -117,16 +107,20 @@ class TicTacToe {
         cell.classList.remove("cellWait");
       }
 
+      const index = this.cells.indexOf(cell);
+      if (index !== -1) {
+        this.cells.splice(index, 1);
+      }
+
       console.log("o");
       this.step = false;
     }
 
     this.checkDraw();
-    this.win();
+    this.checkWin();
   }
 
-  // TODO: rename to 'checkWinningPositions'
-  winningPositions(winningMark) {
+  checkWinningPositions(winningMark) {
     let winningPositions = [
       [0, 1, 2],
       [3, 4, 5],
@@ -153,30 +147,27 @@ class TicTacToe {
     return false;
   }
 
-  // TODO: rename to 'checkWin'
-  win() {
-    if (this.winningPositions("x")) {
+  checkWin() {
+    if (this.checkWinningPositions("x")) {
       this.player.innerHTML = `X Won!`;
       this.parent.classList.add("win");
       this.comments.innerHTML = "Congartulations";
 
       for (const cell of this.fullCells) {
-        cell.classList.remove("cellWait");
+        cell.classList.remove("cellWait", "full");
       }
 
       console.log("win!!X");
-      return true; // TODO: remove 'return true' as it is not used
-    } else if (this.winningPositions("o")) {
+    } else if (this.checkWinningPositions("o")) {
       this.player.innerHTML = "O Won!";
       this.parent.classList.add("win");
       this.comments.innerHTML = "Congartulations";
 
       for (const cell of this.fullCells) {
-        cell.classList.remove("cellWait");
+        cell.classList.remove("cellWait", "full");
       }
 
       console.log("win!!O");
-      return true; // TODO: remove 'return true' as it is not used
     }
   }
 
