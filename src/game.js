@@ -1,4 +1,4 @@
-class TicTacToe {
+export class TicTacToe {
   step = false;
   allCellsFull = 0;
   style = localStorage.getItem("style") ?? "light";
@@ -199,5 +199,3 @@ class TicTacToe {
     console.log("clear");
   }
 }
-
-new TicTacToe(document.getElementById("parent"));
