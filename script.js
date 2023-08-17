@@ -1,5 +1,12 @@
 class TicTacToe {
+  // TODO: move variables declaration to the top of the class
+  // step = false;
+  // allCellsFull = 0;
+  // style = "light";
+  // parent = null;
+
   constructor(parent) {
+    // TODO: move variables declaration to the top of the class
     this.step = false;
     this.allCellsFull = 0;
     this.style = "light";
@@ -27,9 +34,11 @@ class TicTacToe {
     tictactoeDiv.appendChild(cellDiv);
 
     this.createCell(cellDiv);
+    // TODO: no need to use getElementsByClassName, just add elements to the arrays when you create them
+    // TODO: move this.cells, this.fullCells, this.emptyCells to the createCells method
     this.cells = document.getElementsByClassName("cell");
     this.fullCells = document.getElementsByClassName("full");
-    this.emptyCells = document.getElementsByClassName("empty");
+    this.emptyCells = document.getElementsByClassName("empty"); // this is probably empty here, as you don't have any empty cells yet so no need
 
     this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
     tictactoeDiv.appendChild(this.buttonPlayAgain);
@@ -43,8 +52,8 @@ class TicTacToe {
     return div;
   }
 
-  // TODO: rename to 'createTicTacToe' variable to cellDiv
-  // TODO: rename to 'createCell' method to 'createCell' as it creates not only one cell but 9
+  // TODO: rename to 'createTicTacToe' variable to cellsDiv
+  // TODO: rename to 'createCell' method to 'createCells' as it creates not only one cell but 9
   createCell(tictactoe) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
       const cell = document.createElement("div"); // TODO: use 'createButton' method instead
@@ -53,6 +62,9 @@ class TicTacToe {
       cell.onclick = () => this.onCellPress(cell);
 
       tictactoe.appendChild(cell);
+
+      // TODO: push cell to the array here instead using getElementsByClassName
+      // this.cells.push(cell);
     }
     console.log(this.cells);
   }
