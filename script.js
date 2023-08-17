@@ -1,7 +1,7 @@
 class TicTacToe {
   step = false;
   allCellsFull = 0;
-  style = localStorage.getItem('style');
+  style = localStorage.setItem('style', 'light');
   cells = [];
 
   constructor(parent) {
@@ -67,15 +67,15 @@ class TicTacToe {
   }
 
   changeStyle() {
-    if (this.style === "light") {
+    if (this.style = 'light') {
       this.parent.classList.add("dark");
 
-      this.style = localStorage.setItem('style', this.style);
+      this.style = localStorage.setItem('style', 'dark');
       console.log(this.style);
     } else {
-      this.parent.classList.remove("dark");
+      this.parent.classList.remove('dark');
 
-      this.style = localStorage.setItem('style', this.style);
+      this.style = localStorage.setItem('style', 'light');
       console.log(this.style);
     }
 

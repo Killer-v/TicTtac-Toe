@@ -46,6 +46,7 @@ body {
 
 .dark .buttonTopic {
     background-image: url(/img/darkButtonTopic.svg);
+    background-color: black;
 }
 
 .playerDiv {
@@ -107,6 +108,7 @@ body {
 
 .dark .cell {
     background-image: url(/img/empty-darkBlock.svg);
+    background-color: black;
 }
 
 .stepX {
@@ -148,6 +150,7 @@ body {
 
 .dark .button {
     background-image: url(/img/darkButton-play-Again.svg);
+    background-color: black;
 }
 
 .win .button {
