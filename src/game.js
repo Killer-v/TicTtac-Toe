@@ -1,3 +1,5 @@
+import { server } from "./server";
+
 export class TicTacToe {
   step = false;
   allCellsFull = 0;
@@ -5,6 +7,8 @@ export class TicTacToe {
   cells = [];
 
   constructor() {
+    server.init();
+
     this.parent = document.getElementById("parent");
 
     const ticTacToeDiv = this.createDiv("tictactoeDiv");
@@ -89,7 +93,6 @@ export class TicTacToe {
       cell.classList.remove("full");
       this.player.innerHTML = "O Turn";
 
-      console.log("x");
       this.step = true;
     } else if (this.step && cell.classList.contains("full")) {
       cell.classList.add("o", "empty", "stepO");
@@ -101,11 +104,10 @@ export class TicTacToe {
         cell.classList.remove("cellWait");
       }
 
-      const index = this.cells.indexOf(cell);
-
-      console.log("o");
       this.step = false;
     }
+
+    server.makeMove({ cell: this.cells.indexOf(cell), step: this.step });
 
     this.checkDraw();
     this.checkWin();
@@ -147,8 +149,6 @@ export class TicTacToe {
       for (const cell of this.fullCells) {
         cell.classList.remove("cellWait", "full");
       }
-
-      console.log("win!!X");
     } else if (this.checkWinningPositions("o")) {
       this.player.innerHTML = "O Won!";
       this.parent.classList.add("win");
@@ -157,8 +157,6 @@ export class TicTacToe {
       for (const cell of this.fullCells) {
         cell.classList.remove("cellWait", "full");
       }
-
-      console.log("win!!O");
     }
   }
 
