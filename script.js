@@ -1,7 +1,7 @@
 class TicTacToe {
   step = false;
   allCellsFull = 0;
-  style = localStorage.setItem('style', 'light');
+  style = localStorage.getItem("style") ?? "light";
   cells = [];
 
   constructor(parent) {
@@ -10,8 +10,9 @@ class TicTacToe {
     const tictactoeDiv = this.createDiv("tictactoeDiv");
     parent.appendChild(tictactoeDiv);
 
+    this.setStyle(this.style);
     this.buttonTopic = this.createButton("buttonTopic", () =>
-      this.changeStyle()
+      this.setStyle(this.style === "light" ? "dark" : "light")
     );
     tictactoeDiv.appendChild(this.buttonTopic);
 
@@ -29,8 +30,10 @@ class TicTacToe {
     tictactoeDiv.appendChild(cellDiv);
 
     this.createCells(cellDiv);
-    
-    this.fullCells = this.cells.filter(cell => cell.classList.contains("full"));
+
+    this.fullCells = this.cells.filter((cell) =>
+      cell.classList.contains("full")
+    );
 
     this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
     tictactoeDiv.appendChild(this.buttonPlayAgain);
@@ -43,14 +46,11 @@ class TicTacToe {
     return div;
   }
 
-  // TODO: rename to 'createTicTacToe' variable to cellsDiv
-  createCells(tictactoe) {
+  createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = this.createButton("cell full", () =>
-        this.onCellPress(cell)
-      );
+      const cell = this.createButton("cell full", () => this.onCellPress(cell));
 
-      tictactoe.appendChild(cell);
+      cellsDiv.appendChild(cell);
 
       this.cells.push(cell);
     }
@@ -66,19 +66,21 @@ class TicTacToe {
     return button;
   }
 
-  changeStyle() {
-    if (this.style = 'light') {
+  setStyle(style) {
+    this.style = style;
+    localStorage.setItem("style", style);
+
+    if (style === "dark") {
       this.parent.classList.add("dark");
-
-      this.style = localStorage.setItem('style', 'dark');
-      console.log(this.style);
     } else {
-      this.parent.classList.remove('dark');
-
-      this.style = localStorage.setItem('style', 'light');
-      console.log(this.style);
+      this.parent.classList.remove("dark");
     }
+  }
 
+  blockCells(cells) {
+    for (const cell of cells) {
+      cell.classList.add("cellWait");
+    }
   }
 
   onCellPress(cell) {
@@ -86,14 +88,6 @@ class TicTacToe {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
       this.player.innerHTML = "O Turn";
-
-      for (const cell of this.fullCells) {
-        cell.classList.add("cellWait");
-      }
-      const index = this.cells.indexOf(cell);
-      if (index !== -1) {
-        this.cells.splice(index, 1);
-      }
 
       console.log("x");
       this.step = true;
@@ -108,9 +102,6 @@ class TicTacToe {
       }
 
       const index = this.cells.indexOf(cell);
-      if (index !== -1) {
-        this.cells.splice(index, 1);
-      }
 
       console.log("o");
       this.step = false;
@@ -135,6 +126,12 @@ class TicTacToe {
     for (let i = 0; i < winningPositions.length; i++) {
       const [pos1, pos2, pos3] = winningPositions[i];
 
+      console.log({
+        pos1,
+        pos2,
+        pos3,
+        cells: this.cells,
+      });
       if (
         this.cells[pos1].classList.contains(winningMark) &&
         this.cells[pos2].classList.contains(winningMark) &&
