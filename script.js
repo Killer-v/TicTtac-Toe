@@ -101,7 +101,6 @@ class TicTacToe {
         cell.classList.remove("cellWait");
       }
 
-      const index = this.cells.indexOf(cell);
 
       console.log("o");
       this.step = false;
@@ -126,12 +125,6 @@ class TicTacToe {
     for (let i = 0; i < winningPositions.length; i++) {
       const [pos1, pos2, pos3] = winningPositions[i];
 
-      console.log({
-        pos1,
-        pos2,
-        pos3,
-        cells: this.cells,
-      });
       if (
         this.cells[pos1].classList.contains(winningMark) &&
         this.cells[pos2].classList.contains(winningMark) &&
