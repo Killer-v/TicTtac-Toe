@@ -1,23 +1,23 @@
-class TicTacToe {
+export class TicTacToe {
   step = false;
   allCellsFull = 0;
   style = localStorage.getItem("style") ?? "light";
   cells = [];
 
-  constructor(parent) {
-    this.parent = parent;
+  constructor() {
+    this.parent = document.getElementById("parent");
 
-    const tictactoeDiv = this.createDiv("tictactoeDiv");
-    parent.appendChild(tictactoeDiv);
+    const ticTacToeDiv = this.createDiv("tictactoeDiv");
+    this.parent.appendChild(ticTacToeDiv);
 
     this.setStyle(this.style);
     this.buttonTopic = this.createButton("buttonTopic", () =>
       this.setStyle(this.style === "light" ? "dark" : "light")
     );
-    tictactoeDiv.appendChild(this.buttonTopic);
+    ticTacToeDiv.appendChild(this.buttonTopic);
 
     const playerDiv = this.createDiv("playerDiv");
-    tictactoeDiv.appendChild(playerDiv);
+    ticTacToeDiv.appendChild(playerDiv);
 
     this.player = this.createDiv("player");
     this.player.innerHTML = "X Turn";
@@ -27,7 +27,7 @@ class TicTacToe {
     playerDiv.appendChild(this.comments);
 
     const cellDiv = this.createDiv("cellDiv");
-    tictactoeDiv.appendChild(cellDiv);
+    ticTacToeDiv.appendChild(cellDiv);
 
     this.createCells(cellDiv);
 
@@ -36,7 +36,7 @@ class TicTacToe {
     );
 
     this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
-    tictactoeDiv.appendChild(this.buttonPlayAgain);
+    ticTacToeDiv.appendChild(this.buttonPlayAgain);
   }
 
   createDiv(className) {
@@ -101,6 +101,7 @@ class TicTacToe {
         cell.classList.remove("cellWait");
       }
 
+      const index = this.cells.indexOf(cell);
 
       console.log("o");
       this.step = false;
@@ -192,5 +193,3 @@ class TicTacToe {
     console.log("clear");
   }
 }
-
-new TicTacToe(document.getElementById("parent"));
