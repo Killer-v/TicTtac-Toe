@@ -101,8 +101,6 @@ export class TicTacToe {
         cell.classList.remove("cellWait");
       }
 
-      const index = this.cells.indexOf(cell);
-
       console.log("o");
       this.step = false;
     }
