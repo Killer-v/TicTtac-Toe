@@ -28,9 +28,47 @@ class Server {
   async createChannel(channelName) {
     this.channel = this.server.channels.get(channelName);
 
-    await this.channel.subscribe(messages.move, (message) =>
-      this.onServerMessage(message)
-    );
+    await this.channel.subscribe(messages.move, (message) => {
+      this.onServerMessage(message);
+      this.checkDraw();
+      this.checkWin();
+    });
+  }
+
+  checkWin() {
+    if (this.checkWinningPositions("x")) {
+      this.player.innerHTML = `X Won!`;
+      this.parent.classList.add("win");
+      this.comments.innerHTML = "Congartulations";
+
+      for (const cell of this.fullCells) {
+        cell.classList.remove("cellWait", "full");
+      }
+    } else if (this.checkWinningPositions("o")) {
+      this.player.innerHTML = "O Won!";
+      this.parent.classList.add("win");
+      this.comments.innerHTML = "Congartulations";
+
+      for (const cell of this.fullCells) {
+        cell.classList.remove("cellWait", "full");
+      }
+    }
+  }
+
+  checkDraw() {
+    for (const cell of this.cells) {
+      if (cell.classList.contains("x") || cell.classList.contains("o")) {
+        this.allCellsFull++;
+        console.log(this.allCellsFull);
+        break;
+      }
+    }
+
+    if (this.allCellsFull === 9) {
+      this.player.innerHTML = "Draw!";
+      this.comments.innerHTML = "It’s a draw";
+      this.parent.classList.add("draw");
+    }
   }
 
   async makeMove(data) {

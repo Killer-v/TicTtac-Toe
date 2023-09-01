@@ -1,24 +1,17 @@
 import { server } from "./server";
 
-export class TicTacToe {
-  step = false;
+export class View {
   allCellsFull = 0;
-  style = localStorage.getItem("style") ?? "light";
   cells = [];
+  
 
   constructor() {
-    server.init();
-    server.onServerMessage = (message) => this.onServerMessage(message);
-
     this.parent = document.getElementById("parent");
 
     const ticTacToeDiv = this.createDiv("tictactoeDiv");
     this.parent.appendChild(ticTacToeDiv);
 
-    this.setStyle(this.style);
-    this.buttonTopic = this.createButton("buttonTopic", () =>
-      this.setStyle(this.style === "light" ? "dark" : "light")
-    );
+    this.buttonTopic = this.createButton("buttonTopic");
     ticTacToeDiv.appendChild(this.buttonTopic);
 
     const playerDiv = this.createDiv("playerDiv");
@@ -36,11 +29,7 @@ export class TicTacToe {
 
     this.createCells(cellDiv);
 
-    this.fullCells = this.cells.filter((cell) =>
-      cell.classList.contains("full")
-    );
-
-    this.buttonPlayAgain = this.createButton("button", () => this.clearCells());
+    this.buttonPlayAgain = this.createButton("button");
     ticTacToeDiv.appendChild(this.buttonPlayAgain);
   }
 
@@ -53,7 +42,9 @@ export class TicTacToe {
 
   createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = this.createButton("cell full", () => this.onCellPress(cell));
+      const cell = this.createButton("cell full");
+      
+      cell.onclick = () => this.onCellPress(cell);
 
       cellsDiv.appendChild(cell);
 
@@ -65,8 +56,6 @@ export class TicTacToe {
   createButton(className, onclick) {
     const button = document.createElement("button");
     button.className = className;
-
-    button.onclick = onclick;
 
     return button;
   }
@@ -94,6 +83,8 @@ export class TicTacToe {
     const cell = this.cells[data.cell];
     this.step = data.step;
 
+    this.cells[data.cell] = this.step ? "o" : "x";
+
     if (!this.step && cell.classList.contains("full")) {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
@@ -112,35 +103,6 @@ export class TicTacToe {
 
       this.step = false;
     }
-
-    this.checkDraw();
-    this.checkWin();
-  }
-
-  onCellPress(cell) {
-    // if (!this.step && cell.classList.contains("full")) {
-    //   cell.classList.add("x", "empty", "stepX");
-    //   cell.classList.remove("full");
-    //   this.player.innerHTML = "O Turn";
-
-    //   this.step = true;
-    // } else if (this.step && cell.classList.contains("full")) {
-    //   cell.classList.add("o", "empty", "stepO");
-    //   cell.classList.remove("cellWait", "full");
-
-    //   this.player.innerHTML = "X Turn";
-
-    //   for (const cell of this.fullCells) {
-    //     cell.classList.remove("cellWait");
-    //   }
-
-    //   this.step = false;
-    // }
-
-    server.makeMove({
-      cell: this.cells.indexOf(cell),
-      step: this.step,
-    });
 
     this.checkDraw();
     this.checkWin();
@@ -173,8 +135,8 @@ export class TicTacToe {
     return false;
   }
 
-  checkWin() {
-    if (this.checkWinningPositions("x")) {
+  setWin(who) {
+    if (who === "x")) {
       this.player.innerHTML = `X Won!`;
       this.parent.classList.add("win");
       this.comments.innerHTML = "Congartulations";
@@ -182,7 +144,9 @@ export class TicTacToe {
       for (const cell of this.fullCells) {
         cell.classList.remove("cellWait", "full");
       }
-    } else if (this.checkWinningPositions("o")) {
+    }
+    
+    if (who === "o") {
       this.player.innerHTML = "O Won!";
       this.parent.classList.add("win");
       this.comments.innerHTML = "Congartulations";
@@ -224,3 +188,5 @@ export class TicTacToe {
     console.log("clear");
   }
 }
+
+export const view = new View();

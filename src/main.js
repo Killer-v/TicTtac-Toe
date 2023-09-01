@@ -1,3 +1,3 @@
-import { TicTacToe } from "./game";
+import { TicTacToe } from "./view";
 
 new TicTacToe();
