@@ -164,7 +164,7 @@ body {
     display: block;
 }
 
-@media (max-width: 360px) and (min-height: 465px) {
+@media (max-width: 360px) and (min-height: 670px) {
     .tictactoeDiv {
         padding: 10px;
     }
