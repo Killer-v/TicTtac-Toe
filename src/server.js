@@ -28,9 +28,15 @@ class Server {
   async createChannel(channelName) {
     this.channel = this.server.channels.get(channelName);
 
+<<<<<<< HEAD
     await this.channel.subscribe(messages.move, (message) => {
       this.onServerMessage(message);
     });
+=======
+    await this.channel.subscribe(messages.move, (message) =>
+      this.onServerMessage(message)
+    );
+>>>>>>> 8a0b3ff6d9b3c4df41fccbc169ad17cdbd2a6d2b
   }
 
   async makeMove(data) {
