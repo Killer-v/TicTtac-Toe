@@ -1,37 +1,33 @@
-const path = require('path');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  mode: 'development',
-  entry: './src/main.js',
-  devtool: "source-map",
-  output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+  mode: "development",
+  entry: {
+    index: "./src/controller.js",
   },
-  module: {
-    rules: [
-      {
-        test: /\.(?:js|mjs|cjs)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              ['@babel/preset-env', { targets: "defaults" }]
-            ]
-          }
-        }
-      },
-      {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
-      },
-    ]
-  },
+  devtool: "inline-source-map",
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: "styles.css"
+    new CopyPlugin({
+      patterns: [
+        { from: "styles", to: "styles" },
+        { from: "img", to: "img" },
+      ],
+    }),
+    new HtmlWebpackPlugin({
+      title: "Development",
+      template: "index.html",
     }),
   ],
+  devServer: {
+    host: 'localhost',
+    port: 8080,
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "dist"),
+    clean: true,
+  },
 };
 
