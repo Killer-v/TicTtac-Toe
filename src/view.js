@@ -27,12 +27,8 @@ export class View {
 
     this.createCells(cellDiv);
 
-    this.buttonPlayAgain = this.createButton("button");
-    ticTacToeDiv.appendChild(this.buttonPlayAgain);
-
-
-    console.log("CELLS", this.cells);
-
+    // this.buttonPlayAgain = this.createButton("button");
+    // ticTacToeDiv.appendChild(this.buttonPlayAgain);
   }
 
   createDiv(className) {
@@ -86,30 +82,40 @@ export class View {
     if (winSymbol === "x") {
       this.player.innerHTML = `X Won!`;
       this.parent.classList.add("win");
-      this.comments.innerHTML = "Congartulations";
+      this.comments.innerHTML = "Next turn O";
     }
 
     if (winSymbol === "o") {
       this.player.innerHTML = "O Won!";
       this.parent.classList.add("win");
-      this.comments.innerHTML = "Congartulations";
+      this.comments.innerHTML = "Next turn X";
     }
   }
 
-  setDraw() {
+  setDraw(nextTurn) {
     this.player.innerHTML = "Draw!";
-    this.comments.innerHTML = "It’s a draw";
     this.parent.classList.add("draw");
+
+    if (nextTurn === "x") {
+      this.comments.innerHTML = "Next turn X";
+    } else if (nextTurn === "o") {
+      this.comments.innerHTML = "Next turn O";
+    }
   }
 
-  clearCells() {
+  clearCells(nextTurn) {
     for (const cell of this.cells) {
       cell.classList.add("full");
       cell.classList.remove("o", "x", "stepX", "stepO", "empty");
     }
 
+    if (nextTurn === "x") {
+      this.player.innerHTML = "X Turn";
+    } else if (nextTurn === "o") {
+      this.player.innerHTML = "O Turn";
+    }
+
     this.parent.classList.remove("win", "draw");
-    this.player.innerHTML = "X Turn";
     this.comments.innerHTML = "";
 
     console.log("clear");

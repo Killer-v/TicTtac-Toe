@@ -26,18 +26,14 @@ class Controller {
             localStorage.setItem("style", this.style);
         };
 
-        view.buttonPlayAgain.onclick = () => this.resetGame();
+        // view.buttonPlayAgain.onclick = () => this.resetGame();
 
         view.onCellPress = (cell) => this.onCellPress(cell);
-
-        console.log(this.cellsData);
-
     }
 
     resetGame() {
         this.cellsData.fill("empty");
-        console.log(this.cellsData);
-        view.clearCells();
+        view.clearCells(this.step);
     }
 
     onServerMessage(message) {
@@ -50,14 +46,12 @@ class Controller {
             view.updateCell(this.cells[data.cell], this.step);
 
             this.cellsData[data.cell] = "x";
-            console.log(this.cellsData);
 
             this.step = "o";
         } else if (this.step === "o" && this.cellsData[data.cell] === "empty") {
             view.updateCell(this.cells[data.cell], this.step);
 
             this.cellsData[data.cell] = "o";
-            console.log(this.cellsData);
 
             this.step = "x";
         }
@@ -71,9 +65,6 @@ class Controller {
             cell: this.cells.indexOf(cell),
             step: this.step,
         });
-
-        // this.checkDraw();
-        // this.checkWin();
     }
 
     checkWin() {
@@ -81,12 +72,17 @@ class Controller {
             view.setWin("x");
 
             this.cellsData.fill("full");
+            console.log(this.step);
+            
+            setTimeout(() => this.resetGame(), 5000);
 
             console.log("win!!X");
         } else if (this.checkWinningPositions("o")) {
             view.setWin("o");
 
             this.cellsData.fill("full");
+
+            setTimeout(() => this.resetGame(), 5000);
 
             console.log("win!!O");
         }
@@ -127,7 +123,9 @@ class Controller {
         }
         console.log("DRAW");
 
-        view.setDraw();
+        view.setDraw(this.step);
+
+        setTimeout(() => this.resetGame(), 5000);
     }
 }
 
