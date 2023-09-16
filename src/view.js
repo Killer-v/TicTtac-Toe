@@ -93,6 +93,11 @@ export class View {
     }
   }
 
+  // TODO4: this method should be called from controller.js like this: view.showNextGameStartPlayer("X or 0");
+  // showNextGameStartPlayer(player) {
+  //   this.comments.innerHTML = `${player} will start the next game`;// I also suggest to change this text to "X will start the next game" or "O will start the next game"
+  // }
+
   setDraw(nextTurn) {
     this.player.innerHTML = "Draw!"; // this is OK to set from here as it is only set from one place in a code
     this.parent.classList.add("draw");
