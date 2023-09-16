@@ -1,7 +1,6 @@
 export class View {
-  allCellsFull = 0;
+  allCellsFull = 0; // TODO1: remove as not used
   cells = [];
-
 
   constructor() {
     this.parent = document.getElementById("parent");
@@ -15,8 +14,8 @@ export class View {
     const playerDiv = this.createDiv("playerDiv");
     ticTacToeDiv.appendChild(playerDiv);
 
-    this.player = this.createDiv("player");
-    this.player.innerHTML = "X Turn";
+    this.player = this.createDiv("player"); // TODO2: rename this variable to "turnPointer"
+    this.player.innerHTML = "X Turn"; // TODO3: move code of this line to a separated method named "setTurn" with parameter x or o, and call it from controller.js whn turn in changing like this: view.setTurn("x"); Remove all other lines like this from this class
     playerDiv.appendChild(this.player);
 
     this.comments = this.createDiv("playerP");
@@ -51,6 +50,7 @@ export class View {
   }
 
   createButton(className, onclick) {
+    // TODO5: remove onclick as not used
     const button = document.createElement("button");
     button.className = className;
 
@@ -69,37 +69,38 @@ export class View {
     if (step === "x") {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
-      this.player.innerHTML = "O Turn";
+      this.player.innerHTML = "O Turn"; // TODO3: this should be called from controller.js like this: view.setTurn("o");
     } else if (step === "o") {
       cell.classList.add("o", "empty", "stepO");
       cell.classList.remove("cellWait", "full");
 
-      this.player.innerHTML = "X Turn";
+      this.player.innerHTML = "X Turn"; // TODO3: this should be called from controller.js like this: view.setTurn("x");
     }
   }
 
   setWin(winSymbol) {
+    // this code can be simplified to just 3 lines of code, look my comments below
     if (winSymbol === "x") {
-      this.player.innerHTML = `X Won!`;
-      this.parent.classList.add("win");
-      this.comments.innerHTML = "Next turn O";
+      this.player.innerHTML = `X Won!`; // TODO6: move code of this line to a separated method named "setWinText" and call it like this: view.setWinText(winSymbol);
+      this.parent.classList.add("win"); // TODO7: this is duplicated for both ifs, can be called just once and the beginning of this method
+      this.comments.innerHTML = "Next turn O"; // TODO4: move code of this line to a separated method named "showNextGameStartPlayer" and call from controller.js like this: view.showNextGameStartPlayer("X of 0");
     }
 
     if (winSymbol === "o") {
-      this.player.innerHTML = "O Won!";
-      this.parent.classList.add("win");
-      this.comments.innerHTML = "Next turn X";
+      this.player.innerHTML = "O Won!"; // TODO6: move code of this line to a separated method named "setWinText" and call it like this: view.setWinText(winSymbol);
+      this.parent.classList.add("win"); // TODO7: this is duplicated for both ifs, can be called just once and the beginning of this method
+      this.comments.innerHTML = "Next turn X"; // TODO4: move code of this line to a separated method named "showNextGameStartPlayer" and call from controller.js like this: view.showNextGameStartPlayer("X of 0");
     }
   }
 
   setDraw(nextTurn) {
-    this.player.innerHTML = "Draw!";
+    this.player.innerHTML = "Draw!"; // this is OK to set from here as it is only set from one place in a code
     this.parent.classList.add("draw");
 
     if (nextTurn === "x") {
-      this.comments.innerHTML = "Next turn X";
+      this.comments.innerHTML = "Next turn X"; // TODO4: this should be called from controller.js like this: view.setComment("Next turn X");
     } else if (nextTurn === "o") {
-      this.comments.innerHTML = "Next turn O";
+      this.comments.innerHTML = "Next turn O"; // TODO4: this should be called from controller.js like this: view.setComment("Next turn X");
     }
   }
 
@@ -110,9 +111,9 @@ export class View {
     }
 
     if (nextTurn === "x") {
-      this.player.innerHTML = "X Turn";
+      this.player.innerHTML = "X Turn"; // TODO3: this should be called from controller.js like this: view.setTurn("x");
     } else if (nextTurn === "o") {
-      this.player.innerHTML = "O Turn";
+      this.player.innerHTML = "O Turn"; // TODO3: this should be called from controller.js like this: view.setTurn("o");
     }
 
     this.parent.classList.remove("win", "draw");
