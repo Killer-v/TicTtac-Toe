@@ -20,7 +20,7 @@ body {
 
 .tictactoeDiv {
   padding: 30px;
-  height: 82%;
+  height: 66%;
 }
 
 @media (max-width: 216px) {
