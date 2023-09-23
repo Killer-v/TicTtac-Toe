@@ -1,10 +1,10 @@
-import { server } from "./server";
+import { messages, server } from "./server";
 import { view } from "./view";
 import { getRandomInt } from "./utils/random";
 
 export class Controller {
   localState = {
-    roomName: "",
+    userName: "",
     theme: localStorage.getItem("style") ?? "light",
   };
 
@@ -17,13 +17,79 @@ export class Controller {
     currentMove: getRandomInt(1) === 0 ? "x" : "o",
   };
 
+  restoreLocalState() {
+    const storedState = localStorage.getItem("localState");
+
+    if (!storedState) {
+      return;
+    }
+
+    this.localState = JSON.parse(storedState);
+  }
+
+  saveLocalState() {
+    localStorage.setItem("localState", JSON.stringify(this.localState));
+  }
+
+  updateLocalState(state) {
+    this.localState = {
+      ...this.localState,
+      ...state,
+    };
+
+    this.saveLocalState();
+  }
+
+  get roomID() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    return urlParams.get("roomID");
+  }
+
+  set roomID(roomID) {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get("roomID") === roomID) {
+      return;
+    }
+
+    urlParams.set("roomID", roomID);
+    window.location.search = urlParams;
+  }
+
+  generateRoomID() {
+    return this.localState.userName + Date.now();
+  }
+
   async init() {
-    const roomName = await view.showRoomNameInput(this.localState.roomName);
+    this.restoreLocalState();
+
+    if (!this.localState.userName) {
+      const userName = await view.showUserNameInput();
+      this.updateLocalState({ userName });
+    }
 
     view.showMessage("Waiting for opponent...");
     view.hideRoomNameInput();
 
-    server.initRoom(roomName);
+    const roomID = this.roomID || this.generateRoomID();
+    await server.initRoom(roomID);
+
+    this.roomID = roomID;
+    server.message(messages.userReady, {
+      name: this.localState.userName,
+      roomID: this.localState.activeRoomID,
+    });
+
+    server.on[messages.userReady] = (data) => {
+      console.log(messages.userReady, data);
+      // current user is connected
+      // if (data.name === this.localState.userName) {
+      //   this.roomID = data.roomID;
+      // } else {
+      //   view.showMessage(`${data.name} joined game`);
+      // }
+    };
 
     // server.onStateChange = (stateData) => this.onStateChange(stateData);
 

@@ -6,7 +6,7 @@ export class View {
   constructor() {
     this.parent = document.getElementById("parent");
 
-    this.createRoomNameInput();
+    this.createUserNameInput();
     this.createMessageDiv();
     this.createErrorDiv();
 
@@ -33,15 +33,15 @@ export class View {
     this.createCells(cellDiv);
   }
 
-  createRoomNameInput() {
-    this.roomNameInputDiv = createDiv("roomNameInputDiv");
-    this.parent.appendChild(this.roomNameInputDiv);
+  createUserNameInput() {
+    this.userNameInputDiv = createDiv("roomNameInputDiv");
+    this.parent.appendChild(this.userNameInputDiv);
 
-    this.roomNameInput = createInput("Enter room name", "roomNameInput");
-    this.roomNameInputDiv.appendChild(this.roomNameInput);
+    this.userNameInput = createInput("Enter your name", "nameInput");
+    this.userNameInputDiv.appendChild(this.userNameInput);
 
-    this.roomNameInputEnter = createButton("Enter room", "roomNameInputEnter");
-    this.roomNameInputDiv.appendChild(this.roomNameInputEnter);
+    this.userNameInputEnter = createButton("Enter room", "nameInputEnter");
+    this.userNameInputDiv.appendChild(this.userNameInputEnter);
   }
 
   createCells(cellsDiv) {
@@ -119,15 +119,17 @@ export class View {
     console.log("clear");
   }
 
-  showRoomNameInput(roomName) {
+  showUserNameInput(userName) {
     return new Promise((resolve) => {
-      view.roomNameInput.value = roomName;
+      if (userName) {
+        view.userNameInput.value = userName;
+      }
 
-      this.roomNameInputEnter.onclick = () => {
-        if (view.roomNameInput.value === "") {
-          this.showError("Please enter room name");
+      this.userNameInputEnter.onclick = () => {
+        if (view.userNameInput.value === "") {
+          this.showError("Please enter your name");
         } else {
-          resolve(view.roomNameInput.value);
+          resolve(view.userNameInput.value);
         }
       };
     });
@@ -167,7 +169,7 @@ export class View {
   }
 
   hideRoomNameInput() {
-    this.roomNameInputDiv.style.display = "none";
+    this.userNameInputDiv.style.display = "none";
   }
 }
 
