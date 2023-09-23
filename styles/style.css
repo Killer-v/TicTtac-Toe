@@ -85,7 +85,7 @@ body {
   }
 }
 
-.buttonTopic {
+.themeSwitcher {
   background-image: url(/img/buttonTopic.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -95,9 +95,12 @@ body {
   cursor: pointer;
   border: none;
   background-color: white;
+  position: fixed;
+  right: 0px;
+  top: 10px;
 }
 
-.dark .buttonTopic {
+.dark .themeSwitcher {
   background-image: url(/img/darkButtonTopic.svg);
   background-color: black;
 }

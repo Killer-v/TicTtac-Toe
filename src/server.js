@@ -4,9 +4,15 @@ const API_KEY = "Z9oq-w.SeC0sA:RWchQVoe5OW6HCx_ogk-pRt_g2qoBkzE3huhxdsSI_A";
 
 export const messages = {
   userReady: "userReady",
+  startGame: "startGame",
+  move: "move",
 };
 
 class Server {
+  roomState = {
+    users: new Map(),
+  };
+
   on = {
     [messages.userReady]: () => {},
   };
@@ -16,8 +22,6 @@ class Server {
     const server = new ably.Realtime.Promise(API_KEY);
 
     await server.connection.once("connected");
-
-    window.addEventListener("beforeunload", () => ably.close());
 
     return server;
   }
@@ -37,13 +41,27 @@ class Server {
       this.on[message] = () => {};
 
       this.channel.subscribe(message, (data) => {
-        this.on[message](JSON.parse(data.data));
+        const parsedData = JSON.parse(data.data);
+        this.on[message](parsedData);
+
+        const { users } = this.roomState;
+
+        switch (message) {
+          case messages.userReady:
+          case messages.startGame:
+            users.set(parsedData.userID, parsedData.userName);
+            break;
+        }
       });
     }
   }
 
   async message(messageType, data) {
     await this.channel.publish(messageType, JSON.stringify(data));
+  }
+
+  closeConnection() {
+    ably.close();
   }
 }
 

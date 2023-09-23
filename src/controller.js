@@ -4,6 +4,7 @@ import { getRandomInt } from "./utils/random";
 
 export class Controller {
   localState = {
+    userID: "",
     userName: "",
     theme: localStorage.getItem("style") ?? "light",
   };
@@ -58,61 +59,87 @@ export class Controller {
   }
 
   generateRoomID() {
-    return this.localState.userName + Date.now();
+    if (!this.roomID) {
+      this.roomID = this.localState.userID;
+    }
+  }
+
+  sendUserReady(roomID) {
+    server.message(messages.userReady, {
+      userID: this.localState.userID,
+      userName: this.localState.userName,
+    });
   }
 
   async init() {
     this.restoreLocalState();
 
+    view.setStyle(this.localState.theme);
+
+    view.onCellPress = (cell) => this.onCellPress(cell);
+
+    view.themeSwitcher.onclick = () => this.toggleStyle();
+
     if (!this.localState.userName) {
       const userName = await view.showUserNameInput();
-      this.updateLocalState({ userName });
+      const userID = btoa(userName + Date.now() + Math.random());
+      this.updateLocalState({ userName, userID });
     }
 
     view.showMessage("Waiting for opponent...");
     view.hideRoomNameInput();
 
-    const roomID = this.roomID || this.generateRoomID();
-    await server.initRoom(roomID);
+    this.generateRoomID();
+    await server.initRoom(this.roomID);
 
-    this.roomID = roomID;
-    server.message(messages.userReady, {
-      name: this.localState.userName,
-      roomID: this.localState.activeRoomID,
-    });
+    this.sendUserReady(this.roomID);
 
     server.on[messages.userReady] = (data) => {
+      if (data.userID === this.localState.userID) return;
       console.log(messages.userReady, data);
-      // current user is connected
-      // if (data.name === this.localState.userName) {
-      //   this.roomID = data.roomID;
-      // } else {
-      //   view.showMessage(`${data.name} joined game`);
-      // }
+
+      view.showMessage(`${data.userName} joined game`);
+      setTimeout(() => view.hideMessage(), 3000);
+
+      view.showField();
+
+      this.startGame();
     };
 
-    // server.onStateChange = (stateData) => this.onStateChange(stateData);
+    server.on[messages.startGame] = (data) => {
+      if (data.userID === this.localState.userID) return;
+      console.log(messages.userReady, data);
 
-    // this.resetGame();
+      view.showField();
 
-    // view.setStyle(this.style);
+      view.showMessage(`${data.userName} joined game`);
+      setTimeout(() => view.hideMessage(), 3000);
+    };
 
-    // view.setTurn(this.step);
+    server.on[messages.move] = (data) => this.onMove(data);
 
-    // view.buttonTopic.onclick = () => this.toggleStyle();
+    // window.addEventListener("beforeunload", async (event) => {
+    //   event.returnValue = `Are you sure you want to leave?`;
 
-    // view.onCellPress = (cell) => this.onCellPress(cell);
+    //   server.closeConnection();
+    // });
   }
 
   startGame() {
-    view.hideMessage();
-    view.createGameView();
+    server.message(messages.startGame, {
+      userID: this.localState.userID,
+      userName: this.localState.userName,
+    });
+
+    this.resetGame();
+
+    view.setTurn(this.step);
   }
 
   toggleStyle() {
-    this.style = this.style === "light" ? "dark" : "light";
-    view.setStyle(this.style);
-    localStorage.setItem("style", this.style);
+    const theme = this.localState.theme === "light" ? "dark" : "light";
+    view.setStyle(theme);
+    this.updateLocalState({ theme });
   }
 
   resetGame() {
@@ -121,9 +148,8 @@ export class Controller {
     view.setTurn(this.step);
   }
 
-  onMove(message) {
-    const data = JSON.parse(message.data);
-
+  onMove(data) {
+    console.log("onMove", data);
     this.step = data.step;
     this.cell = view.cells[data.cell];
     this.gameState.cellsData[data.cell] = this.step;
@@ -172,7 +198,7 @@ export class Controller {
       return;
     }
 
-    server.makeMove({
+    server.message(messages.move, {
       cell: view.cells.indexOf(cell),
       step: this.step,
     });

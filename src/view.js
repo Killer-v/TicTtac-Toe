@@ -10,27 +10,27 @@ export class View {
     this.createMessageDiv();
     this.createErrorDiv();
 
-    // this.buttonPlayAgain = createButton("button");
-    // ticTacToeDiv.appendChild(this.buttonPlayAgain);
-  }
+    this.themeSwitcher = createButton("", "themeSwitcher");
+    this.parent.appendChild(this.themeSwitcher);
 
-  createGameView() {
-    this.buttonTopic = this.createButton("buttonTopic");
-    ticTacToeDiv.appendChild(this.buttonTopic);
+    this.ticTacToeDiv = createDiv("tictactoeDiv");
+    this.parent.appendChild(this.ticTacToeDiv);
 
-    const playerDiv = this.createDiv("playerDiv");
-    ticTacToeDiv.appendChild(playerDiv);
+    const playerDiv = createDiv("playerDiv");
+    this.ticTacToeDiv.appendChild(playerDiv);
 
-    this.turnPointer = this.createDiv("player");
+    this.turnPointer = createDiv("player");
     playerDiv.appendChild(this.turnPointer);
 
-    this.comments = this.createDiv("playerP");
+    this.comments = createDiv("playerP");
     playerDiv.appendChild(this.comments);
 
-    const cellDiv = this.createDiv("cellDiv");
-    ticTacToeDiv.appendChild(cellDiv);
+    const cellDiv = createDiv("cellDiv");
+    this.ticTacToeDiv.appendChild(cellDiv);
 
     this.createCells(cellDiv);
+
+    this.hideField();
   }
 
   createUserNameInput() {
@@ -44,9 +44,11 @@ export class View {
     this.userNameInputDiv.appendChild(this.userNameInputEnter);
   }
 
+  onCellPress() {}
+
   createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = createButton("cell full");
+      const cell = createButton("", "cell full");
 
       cell.onclick = () => this.onCellPress(cell);
 
@@ -170,6 +172,14 @@ export class View {
 
   hideRoomNameInput() {
     this.userNameInputDiv.style.display = "none";
+  }
+
+  hideField() {
+    this.ticTacToeDiv.style.display = "none";
+  }
+
+  showField() {
+    this.ticTacToeDiv.style.display = "block";
   }
 }
 
