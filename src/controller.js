@@ -8,10 +8,6 @@ class Controller {
 
   cellsData = [];
 
-  constructor() {
-    this.init();
-  }
-
   async init() {
     await server.init();
 
