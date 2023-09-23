@@ -216,8 +216,6 @@ export class Controller {
     view.setWinText(winner);
     this.gameState.cellsData.fill("full");
 
-    server.setWin(winner);
-
     setTimeout(() => this.resetGame(), 5000);
     console.log(`winner: ${winner}`);
   }
