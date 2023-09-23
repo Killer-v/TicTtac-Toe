@@ -8,13 +8,26 @@ export class Controller {
 
   cellsData = [];
 
+  state = {
+    currentUserName: "",
+    opponentName: "",
+    currentUserType: "", // "x" or "o"
+    opponentType: "", // "x" or "o"
+    currentMove: "", // "opponent" ot "current user"
+  };
+
   async init() {
-    await server.init();
+    await this.initUser();
+    // TODO: get use name here
+    // const userName = prompt("Enter your name");
+    const userName = "user";
+    await server.init(userName);
 
     this.resetGame();
     console.log(this.cellsData);
 
-    server.onServerMessage = (message) => this.onServerMessage(message);
+    server.onMove = (message) => this.onMove(message);
+    server.onUserConnected = (message) => this.onUserConnected(message);
 
     view.setStyle(this.style);
 
@@ -23,6 +36,14 @@ export class Controller {
     view.buttonTopic.onclick = () => this.toggleStyle();
 
     view.onCellPress = (cell) => this.onCellPress(cell);
+  }
+
+  initUser() {
+    view.onUserNameEntered = (name) => this.changeName(name);
+
+    if (this.state.userName === "") {
+      view.showNameInput();
+    }
   }
 
   toggleStyle() {
@@ -37,7 +58,7 @@ export class Controller {
     view.setTurn(this.step);
   }
 
-  onServerMessage(message) {
+  onMove(message) {
     const data = JSON.parse(message.data);
 
     this.step = data.step;
@@ -52,6 +73,28 @@ export class Controller {
 
     this.checkDraw();
     this.checkWin();
+  }
+
+  onUserConnected(message) {
+    const data = JSON.parse(message.data);
+
+    // TODO: show user message: "${friendNam} joined game"
+    console.log(data.name);
+
+    this.state.opponentName = data.name;
+
+    // veiw.showMessage(`${data.name} joined game`);
+
+    // this.assignUserRoles();
+  }
+
+  // TODO: call this method when user enter name and press OK
+  changeName(name) {
+    this.state.currentUserName = name;
+
+    server.changeName({
+      name: name,
+    });
   }
 
   switchStep() {

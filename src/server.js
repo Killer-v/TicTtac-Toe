@@ -4,13 +4,13 @@ const API_KEY = "Z9oq-w.SeC0sA:RWchQVoe5OW6HCx_ogk-pRt_g2qoBkzE3huhxdsSI_A";
 
 const messages = {
   move: "move",
-  message: "message",
+  changeName: "changeName",
 };
 
 class Server {
-  async init() {
+  async init(userName) {
     this.server = await this.connect();
-    await this.createChannel("game");
+    await this.createChannel(userName);
   }
 
   async connect() {
@@ -29,12 +29,20 @@ class Server {
     this.channel = this.server.channels.get(channelName);
 
     await this.channel.subscribe(messages.move, (message) =>
-      this.onServerMessage(message)
+      this.onMove(message)
+    );
+
+    await this.channel.subscribe(messages.changeName, (message) =>
+      this.onUserConnected(message)
     );
   }
 
   async makeMove(data) {
     await this.channel.publish(messages.move, JSON.stringify(data));
+  }
+
+  async changeName(data) {
+    await this.channel.publish(messages.changeName, JSON.stringify(data));
   }
 }
 

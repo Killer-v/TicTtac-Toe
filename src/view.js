@@ -59,23 +59,23 @@ export class View {
       this.turnPointer.innerHTML = "X Turn";
     } else if (turn === "o") {
       this.turnPointer.innerHTML = "O Turn";
-    } 
+    }
   }
 
-  setComment(turn){
+  setComment(turn) {
     if (turn === "x") {
       this.comments.innerHTML = "Next turn X";
     } else if (turn === "o") {
       this.comments.innerHTML = "Next turn O";
-    } 
+    }
   }
 
-  setWinText(winSymbol){
+  setWinText(winSymbol) {
     if (winSymbol === "x") {
       this.turnPointer.innerHTML = "X Won!";
     } else if (winSymbol === "o") {
       this.turnPointer.innerHTML = "O Won!";
-    } 
+    }
   }
 
   setStyle(style) {
@@ -115,6 +115,14 @@ export class View {
     this.comments.innerHTML = "";
 
     console.log("clear");
+  }
+
+  createNameInput() {
+    button.onclick = this.onUserNameEntered(nameInput.value);
+  }
+
+  showNameInput() {
+    // TODO: show name input
   }
 }
 
