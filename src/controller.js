@@ -2,7 +2,7 @@ import { server } from "./server";
 import { view } from "./view";
 import { getRandomInt } from "./untils/random";
 
-class Controller {
+export class Controller {
   style = localStorage.getItem("style") ?? "light";
   step = getRandomInt(1) === 0 ? "x" : "o";
 
@@ -140,5 +140,3 @@ class Controller {
     setTimeout(() => this.resetGame(), 5000);
   }
 }
-
-export const controller = new Controller();
