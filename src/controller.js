@@ -1,49 +1,46 @@
 import { server } from "./server";
 import { view } from "./view";
-import { getRandomInt } from "./untils/random";
+import { getRandomInt } from "./utils/random";
 
 export class Controller {
-  style = localStorage.getItem("style") ?? "light";
-  step = getRandomInt(1) === 0 ? "x" : "o";
+  localState = {
+    roomName: "",
+    theme: localStorage.getItem("style") ?? "light",
+  };
 
-  cellsData = [];
-
-  state = {
-    currentUserName: "",
-    opponentName: "",
-    currentUserType: "", // "x" or "o"
-    opponentType: "", // "x" or "o"
-    currentMove: "", // "opponent" ot "current user"
+  gameState = {
+    roles: {
+      player1: "",
+      player2: "",
+    },
+    cellsData: [],
+    currentMove: getRandomInt(1) === 0 ? "x" : "o",
   };
 
   async init() {
-    await this.initUser();
-    // TODO: get use name here
-    // const userName = prompt("Enter your name");
-    const userName = "user";
-    await server.init(userName);
+    const roomName = await view.showRoomNameInput(this.localState.roomName);
 
-    this.resetGame();
-    console.log(this.cellsData);
+    view.showMessage("Waiting for opponent...");
+    view.hideRoomNameInput();
 
-    server.onMove = (message) => this.onMove(message);
-    server.onUserConnected = (message) => this.onUserConnected(message);
+    server.initRoom(roomName);
 
-    view.setStyle(this.style);
+    // server.onStateChange = (stateData) => this.onStateChange(stateData);
 
-    view.setTurn(this.step);
+    // this.resetGame();
 
-    view.buttonTopic.onclick = () => this.toggleStyle();
+    // view.setStyle(this.style);
 
-    view.onCellPress = (cell) => this.onCellPress(cell);
+    // view.setTurn(this.step);
+
+    // view.buttonTopic.onclick = () => this.toggleStyle();
+
+    // view.onCellPress = (cell) => this.onCellPress(cell);
   }
 
-  initUser() {
-    view.onUserNameEntered = (name) => this.changeName(name);
-
-    if (this.state.userName === "") {
-      view.showNameInput();
-    }
+  startGame() {
+    view.hideMessage();
+    view.createGameView();
   }
 
   toggleStyle() {
@@ -53,7 +50,7 @@ export class Controller {
   }
 
   resetGame() {
-    this.cellsData = new Array(9).fill("empty");
+    this.gameState.cellsData = new Array(9).fill("empty");
     view.clearCells();
     view.setTurn(this.step);
   }
@@ -63,7 +60,7 @@ export class Controller {
 
     this.step = data.step;
     this.cell = view.cells[data.cell];
-    this.cellsData[data.cell] = this.step;
+    this.gameState.cellsData[data.cell] = this.step;
 
     view.updateCell(view.cells[data.cell], this.step);
     view.setTurn(this.step);
@@ -81,7 +78,7 @@ export class Controller {
     // TODO: show user message: "${friendNam} joined game"
     console.log(data.name);
 
-    this.state.opponentName = data.name;
+    this.gameState.opponentName = data.name;
 
     // veiw.showMessage(`${data.name} joined game`);
 
@@ -90,7 +87,7 @@ export class Controller {
 
   // TODO: call this method when user enter name and press OK
   changeName(name) {
-    this.state.currentUserName = name;
+    this.gameState.currentUserName = name;
 
     server.changeName({
       name: name,
@@ -105,7 +102,7 @@ export class Controller {
   onCellPress(cell) {
     console.log("onCellPress", this.step);
 
-    if (this.cellsData[view.cells.indexOf(cell)] !== "empty") {
+    if (this.gameState.cellsData[view.cells.indexOf(cell)] !== "empty") {
       return;
     }
 
@@ -125,7 +122,10 @@ export class Controller {
     view.setWin();
     view.setComment(this.step);
     view.setWinText(winner);
-    this.cellsData.fill("full");
+    this.gameState.cellsData.fill("full");
+
+    server.setWin(winner);
+
     setTimeout(() => this.resetGame(), 5000);
     console.log(`winner: ${winner}`);
   }
@@ -158,9 +158,9 @@ export class Controller {
       const [pos1, pos2, pos3] = winningPositions[i];
 
       if (
-        this.cellsData[pos1] === winningMark &&
-        this.cellsData[pos2] === winningMark &&
-        this.cellsData[pos3] === winningMark
+        this.gameState.cellsData[pos1] === winningMark &&
+        this.gameState.cellsData[pos2] === winningMark &&
+        this.gameState.cellsData[pos3] === winningMark
       ) {
         return true;
       }
@@ -170,8 +170,11 @@ export class Controller {
   }
 
   checkDraw() {
-    for (let i = 0; i < this.cellsData.length; i++) {
-      if (this.cellsData[i] !== "x" && this.cellsData[i] !== "o") {
+    for (let i = 0; i < this.gameState.cellsData.length; i++) {
+      if (
+        this.gameState.cellsData[i] !== "x" &&
+        this.gameState.cellsData[i] !== "o"
+      ) {
         return false;
       }
     }

@@ -1,12 +1,20 @@
+import { createButton, createDiv, createInput } from "./utils/htmlHelpers";
+
 export class View {
   cells = [];
 
   constructor() {
     this.parent = document.getElementById("parent");
 
-    const ticTacToeDiv = this.createDiv("tictactoeDiv");
-    this.parent.appendChild(ticTacToeDiv);
+    this.createRoomNameInput();
+    this.createMessageDiv();
+    this.createErrorDiv();
 
+    // this.buttonPlayAgain = createButton("button");
+    // ticTacToeDiv.appendChild(this.buttonPlayAgain);
+  }
+
+  createGameView() {
     this.buttonTopic = this.createButton("buttonTopic");
     ticTacToeDiv.appendChild(this.buttonTopic);
 
@@ -23,21 +31,22 @@ export class View {
     ticTacToeDiv.appendChild(cellDiv);
 
     this.createCells(cellDiv);
-
-    // this.buttonPlayAgain = this.createButton("button");
-    // ticTacToeDiv.appendChild(this.buttonPlayAgain);
   }
 
-  createDiv(className) {
-    const div = document.createElement("div");
-    div.classList.add(className);
+  createRoomNameInput() {
+    this.roomNameInputDiv = createDiv("roomNameInputDiv");
+    this.parent.appendChild(this.roomNameInputDiv);
 
-    return div;
+    this.roomNameInput = createInput("Enter room name", "roomNameInput");
+    this.roomNameInputDiv.appendChild(this.roomNameInput);
+
+    this.roomNameInputEnter = createButton("Enter room", "roomNameInputEnter");
+    this.roomNameInputDiv.appendChild(this.roomNameInputEnter);
   }
 
   createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = this.createButton("cell full");
+      const cell = createButton("cell full");
 
       cell.onclick = () => this.onCellPress(cell);
 
@@ -45,13 +54,6 @@ export class View {
 
       this.cells.push(cell);
     }
-  }
-
-  createButton(className) {
-    const button = document.createElement("button");
-    button.className = className;
-
-    return button;
   }
 
   setTurn(turn) {
@@ -117,12 +119,55 @@ export class View {
     console.log("clear");
   }
 
-  createNameInput() {
-    button.onclick = this.onUserNameEntered(nameInput.value);
+  showRoomNameInput(roomName) {
+    return new Promise((resolve) => {
+      view.roomNameInput.value = roomName;
+
+      this.roomNameInputEnter.onclick = () => {
+        if (view.roomNameInput.value === "") {
+          this.showError("Please enter room name");
+        } else {
+          resolve(view.roomNameInput.value);
+        }
+      };
+    });
   }
 
-  showNameInput() {
-    // TODO: show name input
+  createErrorDiv() {
+    this.errorMessage = createDiv("errorMessage");
+    this.errorMessage.style.display = "none";
+    this.parent.appendChild(this.errorMessage);
+  }
+
+  showError(message) {
+    this.hideMessage();
+    this.errorMessage.innerHTML = message;
+    this.errorMessage.style.display = "block";
+    setTimeout(() => this.hideError(), 3000);
+  }
+
+  createMessageDiv() {
+    this.message = createDiv("message");
+    this.message.style.display = "none";
+    this.parent.appendChild(this.message);
+  }
+
+  showMessage(message) {
+    this.hideError();
+    this.message.innerHTML = message;
+    this.message.style.display = "block";
+  }
+
+  hideError() {
+    this.errorMessage.style.display = "none";
+  }
+
+  hideMessage() {
+    this.message.style.display = "none";
+  }
+
+  hideRoomNameInput() {
+    this.roomNameInputDiv.style.display = "none";
   }
 }
 
