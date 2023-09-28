@@ -1,81 +1,85 @@
+import { create } from "./untils/create";
 export class View {
   cells = [];
 
   constructor() {
     this.parent = document.getElementById("parent");
 
-    const ticTacToeDiv = this.createDiv("tictactoeDiv");
+    const startPlayDiv = create.createDiv("startPlayDiv");
+    this.parent.appendChild(startPlayDiv);
+
+    this.inputNameField = create.createInput("inputName");
+    startPlayDiv.appendChild(this.inputNameField);
+
+    this.buttonCreateRoom = create.createButton("buttonCreateRoom");
+    this.buttonCreateRoom.innerHTML = "Create Room";
+    startPlayDiv.appendChild(this.buttonCreateRoom);
+
+    this.buttonJoinRoom = create.createButton("buttonJoinRoom");
+    this.buttonJoinRoom.innerHTML = "Join Room";
+    startPlayDiv.appendChild(this.buttonJoinRoom);
+
+    const ticTacToeDiv = create.createDiv("tictactoeDiv");
     this.parent.appendChild(ticTacToeDiv);
+    ticTacToeDiv.classList.add("displayNone");
 
-    this.buttonTopic = this.createButton("buttonTopic");
-    ticTacToeDiv.appendChild(this.buttonTopic);
+    this.buttonTopic = create.createButton("buttonTopic");
+    this.parent.appendChild(this.buttonTopic);
 
-    const playerDiv = this.createDiv("playerDiv");
+    const playerDiv = create.createDiv("playerDiv");
     ticTacToeDiv.appendChild(playerDiv);
 
-    this.turnPointer = this.createDiv("player");
+    this.turnPointer = create.createDiv("player");
     playerDiv.appendChild(this.turnPointer);
 
-    this.comments = this.createDiv("playerP");
+    this.comments = create.createDiv("playerP");
     playerDiv.appendChild(this.comments);
 
-    const cellDiv = this.createDiv("cellDiv");
+    const cellDiv = create.createDiv("cellDiv");
     ticTacToeDiv.appendChild(cellDiv);
 
     this.createCells(cellDiv);
+
+
 
     // this.buttonPlayAgain = this.createButton("button");
     // ticTacToeDiv.appendChild(this.buttonPlayAgain);
   }
 
-  createDiv(className) {
-    const div = document.createElement("div");
-    div.classList.add(className);
-
-    return div;
-  }
-
   createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-      const cell = this.createButton("cell full");
+        const cell = create.createButton("cell full");
 
-      cell.onclick = () => this.onCellPress(cell);
+        cell.onclick = () => this.onCellPress(cell);
 
-      cellsDiv.appendChild(cell);
+        cellsDiv.appendChild(cell);
 
-      this.cells.push(cell);
+        this.cells.push(cell);
     }
-  }
-
-  createButton(className) {
-    const button = document.createElement("button");
-    button.className = className;
-
-    return button;
-  }
+}
 
   setTurn(turn) {
     if (turn === "x") {
       this.turnPointer.innerHTML = "X Turn";
     } else if (turn === "o") {
       this.turnPointer.innerHTML = "O Turn";
-    } 
+    }
   }
 
-  setComment(turn){
+  setComment(turn) {
     if (turn === "x") {
       this.comments.innerHTML = "Next turn X";
     } else if (turn === "o") {
       this.comments.innerHTML = "Next turn O";
-    } 
+    }
   }
 
-  setWinText(winSymbol){
+  setWinText(winSymbol) {
     if (winSymbol === "x") {
       this.turnPointer.innerHTML = "X Won!";
     } else if (winSymbol === "o") {
       this.turnPointer.innerHTML = "O Won!";
-    } 
+    }
   }
 
   setStyle(style) {

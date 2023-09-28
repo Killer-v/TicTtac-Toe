@@ -5,6 +5,10 @@ body {
   font-family: cursive;
 }
 
+.displayNone {
+  display: none;
+}
+
 #parent {
   width: 100%;
   height: 100%;
@@ -19,7 +23,6 @@ body {
 }
 
 .tictactoeDiv {
-  display: none;
   padding: 30px;
   height: 66%;
 }
