@@ -19,6 +19,7 @@ body {
 }
 
 .tictactoeDiv {
+  display: none;
   padding: 30px;
   height: 66%;
 }
