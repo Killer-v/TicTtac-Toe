@@ -1,62 +1,74 @@
-import { create } from "./untils/create";
+import { createButton, createDiv, createInput } from "./untils/htmlHelpers";
 export class View {
   cells = [];
 
   constructor() {
     this.parent = document.getElementById("parent");
 
-    const startPlayDiv = create.createDiv("startPlayDiv");
-    this.parent.appendChild(startPlayDiv);
+    this.ticTacToeDiv = createDiv("tictactoeDiv");
+    this.parent.appendChild(this.ticTacToeDiv);
 
-    this.inputNameField = create.createInput("inputName");
-    startPlayDiv.appendChild(this.inputNameField);
+    this.themeSwitcher = createButton("", "buttonTopic");
+    this.parent.appendChild(this.themeSwitcher);
 
-    this.buttonCreateRoom = create.createButton("buttonCreateRoom");
-    this.buttonCreateRoom.innerHTML = "Create Room";
-    startPlayDiv.appendChild(this.buttonCreateRoom);
+    this.nullifyUser = createButton("", "buttonNullifyUser");
+    this.parent.appendChild(this.nullifyUser);
 
-    this.buttonJoinRoom = create.createButton("buttonJoinRoom");
-    this.buttonJoinRoom.innerHTML = "Join Room";
-    startPlayDiv.appendChild(this.buttonJoinRoom);
+    const playerDiv = createDiv("playerDiv");
+    this.ticTacToeDiv.appendChild(playerDiv);
 
-    const ticTacToeDiv = create.createDiv("tictactoeDiv");
-    this.parent.appendChild(ticTacToeDiv);
-    ticTacToeDiv.classList.add("displayNone");
-
-    this.buttonTopic = create.createButton("buttonTopic");
-    this.parent.appendChild(this.buttonTopic);
-
-    const playerDiv = create.createDiv("playerDiv");
-    ticTacToeDiv.appendChild(playerDiv);
-
-    this.turnPointer = create.createDiv("player");
+    this.turnPointer = createDiv("player");
     playerDiv.appendChild(this.turnPointer);
 
-    this.comments = create.createDiv("playerP");
+    this.comments = createDiv("playerP");
     playerDiv.appendChild(this.comments);
 
-    const cellDiv = create.createDiv("cellDiv");
-    ticTacToeDiv.appendChild(cellDiv);
+    const cellDiv = createDiv("cellDiv");
+    this.ticTacToeDiv.appendChild(cellDiv);
+
+    this.createUserNameInput();
+    this.createMessageDiv();
+    this.createErrorDiv();
 
     this.createCells(cellDiv);
 
+    this.hideField();
+  }
+  
+  createErrorDiv() {
+    this.errorMessage = createDiv("errorMessage");
+    this.errorMessage.classList.add("displayNone");
+    this.parent.appendChild(this.errorMessage);
+  }
+  
+  createMessageDiv() {
+    this.message = createDiv("message");
+    this.message.classList.add("displayNone");
+    this.parent.appendChild(this.message);
+  }
 
+  createUserNameInput() {
+    this.userNameInputDiv = createDiv("roomNameInputDiv");
+    this.parent.appendChild(this.userNameInputDiv);
 
-    // this.buttonPlayAgain = this.createButton("button");
-    // ticTacToeDiv.appendChild(this.buttonPlayAgain);
+    this.userNameInput = createInput("Enter your name", "nameInput");
+    this.userNameInputDiv.appendChild(this.userNameInput);
+
+    this.userNameInputEnter = createButton("Enter room", "nameInputEnter");
+    this.userNameInputDiv.appendChild(this.userNameInputEnter);
   }
 
   createCells(cellsDiv) {
     for (let cellNum = 0; cellNum < 9; cellNum++) {
-        const cell = create.createButton("cell full");
+      const cell = createButton("", "cell full");
 
-        cell.onclick = () => this.onCellPress(cell);
+      cell.onclick = () => this.onCellPress(cell);
 
-        cellsDiv.appendChild(cell);
+      cellsDiv.appendChild(cell);
 
-        this.cells.push(cell);
+      this.cells.push(cell);
     }
-}
+  }
 
   setTurn(turn) {
     if (turn === "x") {
@@ -119,6 +131,62 @@ export class View {
     this.comments.innerHTML = "";
 
     console.log("clear");
+  }
+
+  showUserNameInput(userName) {
+    return new Promise((resolve) => {
+      if (userName) {
+        view.userNameInput.value = userName;
+      }
+
+      this.userNameInputEnter.onclick = () => {
+        if (view.userNameInput.value === "") {
+          this.showError("Please enter your name");
+        } else {
+          resolve(view.userNameInput.value);
+        }
+      };
+    });
+  }
+
+
+
+  showError(message) {
+    this.hideMessage();
+    this.errorMessage.innerHTML = message;
+    this.errorMessage.classList.remove("displayNone");
+    setTimeout(() => this.hideError(), 3000);
+  }
+
+  showMessage(message) {
+    console.log(message);
+  }
+
+  showMessage(message) {
+    this.hideError();
+    this.message.innerHTML = message;
+    this.message.classList.remove("displayNone");
+  }
+
+  hideError() {
+    this.errorMessage.classList.add("displayNone");
+  }
+
+  hideMessage() {
+    this.message.classList.add("displayNone");
+  }
+
+  hideField() {
+    this.ticTacToeDiv.classList.add("displayNone");
+  }
+
+  hideRoomNameInput() {
+    this.userNameInputDiv.classList.add("displayNone");
+    this.ticTacToeDiv.classList.remove("displayNone");
+  }
+
+  showField() {
+    this.ticTacToeDiv.classList.remove("displayNone");
   }
 }
 

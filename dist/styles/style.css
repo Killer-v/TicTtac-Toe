@@ -10,13 +10,50 @@ body {
 }
 
 #parent {
+  position: relative;
   width: 100%;
   height: 100%;
   text-align: -webkit-center;
   display: flex;
   align-items: center;
   justify-content: center;
-} 
+}
+
+.roomNameInputDiv {
+  position: absolute;
+  top: 41%;
+  width: 72vw;
+  height: 41vh;
+}
+
+.nameInput {
+  width: 50%;
+  height: 9vh;
+  padding: 5px;
+  background-color: rgba(128, 128, 128, 1);
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 7vh;
+  text-align: center;
+}
+
+.dark .nameInput {
+  background-color: grey;
+}
+
+.nameInputEnter {
+  width: 21%;
+  height: 7vh;
+  font-size: 3vh;
+  position: absolute;
+  border: none;
+  border-radius: 5px;
+  top: 41%;
+  right: 26%;
+  background-color: rgba(0, 166, 130, 1);
+}
 
 .dark {
   background-color: black;
@@ -29,11 +66,13 @@ body {
 
 @media (max-width: 216px) {
   .tictactoeDiv {
-      padding: 15px;
+    padding: 15px;
   }
 }
 
 .buttonTopic {
+  position: absolute;
+  top: 7%;
   background-image: url(/img/buttonTopic.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -43,7 +82,7 @@ body {
   cursor: pointer;
   border: none;
   background-color: white;
-  
+
 }
 
 .dark .buttonTopic {
@@ -85,13 +124,14 @@ body {
 
 @media (max-width: 328px) {
   .cellDiv {
-      gap: 6px;
-      width: 86vw;
+    gap: 6px;
+    width: 86vw;
   }
 }
+
 @media (max-height: 463px) {
   .cellDiv {
-      gap: 6px;
+    gap: 6px;
   }
 }
 
@@ -145,5 +185,20 @@ body {
 
   .playerP {
     font-size: 4vw;
+  }
+
+  .roomNameInputDiv {
+    width: 72vw;
+    height: 41vh;
+  }
+
+  .nameInput {
+    font-size: 6vw;
+    height: 9vw;
+  }
+
+  .nameInputEnter {
+    height: 5vw;
+    font-size: 2vw;
   }
 }

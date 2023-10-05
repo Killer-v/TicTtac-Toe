@@ -19,50 +19,61 @@ body {
   justify-content: center;
 }
 
-.startPlayDiv {
+.message {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-top: 100vh;
+  font-size: 6vh;
+  color: white;
+  background-color: rgba(128, 128, 128, 1);
+}
+
+.errorMessage {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding-top: 100vh;
+  font-size: 6vh;
+  color: white;
+  background-color: rgba(243, 112, 112, 0.84);
+}
+
+.roomNameInputDiv {
   position: absolute;
   top: 41%;
-  width: 72vw;
+  width: 72vh;
   height: 41vh;
 }
 
-.inputName {
-  width: 50%;
+.nameInput {
+  width: 85%;
   height: 9vh;
   padding: 5px;
-  background-color: rgba(128, 128, 128, 1);
   outline: none;
-  border: none;
+  border: 2px black solid;
   border-radius: 10px;
-  color: white;
+  color: dark;
   font-size: 7vh;
   text-align: center;
 }
 
-.dark .inputName {
-  background-color: grey;
+.dark .nameInput {
+  background-color: rgba(255, 255, 255, 0);
+  border: 2px rgba(255, 255, 255, 0.665) solid;
+  color: white;
 }
 
-.buttonCreateRoom,
-.buttonJoinRoom {
-  width: 21%;
-  height: 7vh;
+.nameInputEnter {
+  width: 50%;
+  height: 8vh;
   font-size: 3vh;
   position: absolute;
   border: none;
   border-radius: 5px;
-}
-
-.buttonCreateRoom {
   top: 41%;
   right: 26%;
   background-color: rgba(0, 166, 130, 1);
-}
-
-.buttonJoinRoom {
-  top: 41%;
-  left: 26%;
-  background-color: rgba(255, 176, 72, 1);
 }
 
 .dark {
@@ -92,11 +103,30 @@ body {
   cursor: pointer;
   border: none;
   background-color: white;
-
 }
 
 .dark .buttonTopic {
   background-image: url(/img/darkButtonTopic.svg);
+  background-color: black;
+}
+
+.buttonNullifyUser {
+  position: absolute;
+  top: 8%;
+  right: 14%;
+  background-image: url(/img/ios-close.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  width: 4%;
+  height: 3%;
+  outline: none;
+  cursor: pointer;
+  border: none;
+  background-color: white;
+}
+
+.dark .buttonNullifyUser {
+  background-image: url(/img/ios-close-dark.png);
   background-color: black;
 }
 
@@ -197,19 +227,28 @@ body {
     font-size: 4vw;
   }
 
-  .startPlayDiv {
+  .roomNameInputDiv {
     width: 72vw;
-    height: 41vh;
+    height: 41vw;
   }
 
-  .inputName {
+  .nameInput {
     font-size: 6vw;
     height: 9vw;
   }
 
-  .buttonJoinRoom,
-  .buttonCreateRoom {
+  .nameInputEnter {
     height: 5vw;
     font-size: 2vw;
+  }
+
+  .message {
+    padding-top: 100vw;
+    font-size: 7vw;
+  }
+
+  .errorMessage {
+    padding-top: 100vw;
+    font-size: 7vw;
   }
 }

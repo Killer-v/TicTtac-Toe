@@ -1,74 +1,224 @@
-import { server } from "./server";
+import { messages, server } from "./server";
 import { view } from "./view";
 import { getRandomInt } from "./untils/random";
 
 export class Controller {
-  style = localStorage.getItem("style") ?? "light";
-  step = getRandomInt(1) === 0 ? "x" : "o";
+  localState = {
+    userID: "",
+    userName: "",
+    theme: localStorage.getItem("style") ?? "light",
+  };
 
-  cellsData = [];
+  gameState = {
+    roles: {
+      player1: "",
+      player2: "",
+    },
+    cellsData: [],
+    currentMove: getRandomInt(1) === 0 ? "x" : "o",
+  };
 
   async init() {
-    await server.init();
+    this.restoreLocalState();
+    view.setStyle(this.localState.theme);
+    view.setTurn(this.gameState.currentMove);
+    view.onCellPress = (cell) => this.onCellPress(cell);
+    view.themeSwitcher.onclick = () => this.toggleStyle();
+    view.nullifyUser.onclick = () => this.nullifyUser();
+
+
+
+    if (!this.localState.userName) {
+      const userName = await view.showUserNameInput();
+      const userID = btoa(encodeURIComponent(userName + Date.now()));
+      // this.changeName(userName);
+      this.updateLocalState({ userName, userID });
+    }
+
+    view.showMessage("Waiting for opponent...");
+    view.hideRoomNameInput();
+
+    this.generateRoomID();
+    await server.initRoom(this.roomID);
+
+    this.sendUserReady(this.roomID);
+
+    server.on[messages.userReady] = (data) => {
+      if (data.userID === this.localState.userID) return;
+      console.log(messages.userReady, data);
+      console.log("player1");
+
+      view.showMessage(`${data.userName} joined game`);
+      setTimeout(() => view.hideMessage(), 3000);
+
+      view.showField();
+      this.startGame();
+    };
+
+    server.on[messages.startGame] = (data) => {
+      if (data.userID === this.localState.userID) return;
+      console.log(messages.userReady, data);
+
+      view.showMessage(`${data.userName} joined game`);
+      setTimeout(() => view.hideMessage(), 3000);
+
+      console.log("player2");
+
+      view.showField();
+    };
+
+
+    console.log(this.gameState);
+    server.on[messages.move] = (data) => this.onMove(data);
+
+    window.addEventListener("beforeunload", async (event) => {
+      event.returnValue = `Are you sure you want to leave?`;
+
+      server.closeConnection();
+    });
+  }
+
+  startGame() {
+    server.message(messages.startGame, {
+      userID: this.localState.userID,
+      userName: this.localState.userName,
+    });
 
     this.resetGame();
-    console.log(this.cellsData);
 
-    server.onServerMessage = (message) => this.onServerMessage(message);
-
-    view.setStyle(this.style);
-
-    view.setTurn(this.step);
-
-    view.buttonTopic.onclick = () => this.toggleStyle();
-
-    view.onCellPress = (cell) => this.onCellPress(cell);
+    view.setTurn();
   }
 
-  toggleStyle() {
-    this.style = this.style === "light" ? "dark" : "light";
-    view.setStyle(this.style);
-    localStorage.setItem("style", this.style);
+  restoreLocalState() {
+    const storedState = localStorage.getItem("localState");
+
+    if (!storedState) {
+      return;
+    }
+
+    this.localState = JSON.parse(storedState);
   }
 
-  resetGame() {
-    this.cellsData = new Array(9).fill("empty");
-    view.clearCells();
-    view.setTurn(this.step);
+  saveLocalState() {
+    localStorage.setItem("localState", JSON.stringify(this.localState));
   }
 
-  onServerMessage(message) {
-    const data = JSON.parse(message.data);
+  saveGameState() {
+    localStorage.setItem("gameState", JSON.stringify(this.gameState));
+  }
 
-    this.step = data.step;
-    this.cell = view.cells[data.cell];
-    this.cellsData[data.cell] = this.step;
+  updateLocalState(state) {
+    this.localState = {
+      ...this.localState,
+      ...state,
+    };
 
-    view.updateCell(view.cells[data.cell], this.step);
-    view.setTurn(this.step);
+    this.saveLocalState();
+  }
+
+  get roomID() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    return urlParams.get("roomID");
+  }
+
+  set roomID(roomID) {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get("roomID") === roomID) {
+      console.log("Setting room");
+      return;
+    }
+
+    urlParams.set("roomID", roomID);
+    window.location.search = urlParams;
+  }
+
+  generateRoomID() {
+    if (!this.roomID) {
+      this.roomID = this.localState.userID;
+    }
+  }
+
+  sendUserReady(roomID) {
+    server.message(messages.userReady, {
+      userID: this.localState.userID,
+      userName: this.localState.userName,
+    });
+  }
+
+
+
+  onMove(data) {
+    console.log("onMove", data);
+    this.gameState.cellsData[data.cell] = data.step;
+
+    view.updateCell(view.cells[data.cell], this.gameState.currentMove);
+    view.setTurn(this.gameState.currentMove);
 
     this.switchStep();
-    view.setTurn(this.step);
+    view.setTurn(this.gameState.currentMove);
 
     this.checkDraw();
     this.checkWin();
   }
 
-  switchStep() {
-    this.step = this.step === "x" ? "o" : "x";
-    console.log("switchStep", this.step);
+  onUserConnected(message) {
+    const data = JSON.parse(message.data);
+
+    // TODO: show user message: "${friendNam} joined game"
+    console.log(data.name);
+
+    this.gameState.opponentName = data.name;
+
+    // veiw.showMessage(`${data.name} joined game`);
+
+    // this.assignUserRoles();
   }
 
-  onCellPress(cell) {
-    console.log("onCellPress", this.step);
+  // TODO: call this method when user enter name and press OK
+  // changeName(name) {
+  //   this.gameState.currentUserName = name;
 
-    if (this.cellsData[view.cells.indexOf(cell)] !== "empty") {
+  //   server.changeName({
+  //     name: name,
+  //   });
+  // }
+
+  toggleStyle() {
+    const theme = this.localState.theme === "light" ? "dark" : "light";
+    view.setStyle(theme);
+    this.updateLocalState({ theme });
+  }
+
+  nullifyUser() {
+    this.localState.userID = "";
+    this.localState.userName = "";
+
+    this.saveLocalState();
+    location.reload();
+  }
+
+  switchStep() {
+    this.gameState.currentMove = this.gameState.currentMove === "x" ? "o" : "x";
+    console.log("switchStep", this.gameState.currentMove);
+  }
+
+  // view.cells.
+
+  onCellPress(cell) {
+    console.log("onCellPress", this.gameState.currentMove);
+
+    if (this.gameState.cellsData[view.cells.indexOf(cell)] !== "empty") {
       return;
     }
 
-    server.makeMove({
+    console.log("none press");
+
+
+    server.message(messages.move, {
       cell: view.cells.indexOf(cell),
-      step: this.step,
+      step: this.gameState.currentMove,
     });
   }
 
@@ -80,9 +230,10 @@ export class Controller {
     }
 
     view.setWin();
-    view.setComment(this.step);
+    view.setComment(this.gameState.currentMove);
     view.setWinText(winner);
-    this.cellsData.fill("full");
+    this.gameState.cellsData.fill("full");
+
     setTimeout(() => this.resetGame(), 5000);
     console.log(`winner: ${winner}`);
   }
@@ -115,9 +266,9 @@ export class Controller {
       const [pos1, pos2, pos3] = winningPositions[i];
 
       if (
-        this.cellsData[pos1] === winningMark &&
-        this.cellsData[pos2] === winningMark &&
-        this.cellsData[pos3] === winningMark
+        this.gameState.cellsData[pos1] === winningMark &&
+        this.gameState.cellsData[pos2] === winningMark &&
+        this.gameState.cellsData[pos3] === winningMark
       ) {
         return true;
       }
@@ -127,16 +278,27 @@ export class Controller {
   }
 
   checkDraw() {
-    for (let i = 0; i < this.cellsData.length; i++) {
-      if (this.cellsData[i] !== "x" && this.cellsData[i] !== "o") {
+    for (let i = 0; i < this.gameState.cellsData.length; i++) {
+      if (
+        this.gameState.cellsData[i] !== "x" &&
+        this.gameState.cellsData[i] !== "o"
+      ) {
         return false;
       }
     }
     console.log("DRAW");
 
     view.setDraw();
-    view.setComment(this.step);
+    view.setComment(this.gameState.currentMove);
 
     setTimeout(() => this.resetGame(), 5000);
+  }
+
+  resetGame() {
+    this.gameState.cellsData = new Array(9).fill("empty");
+    this.saveGameState();
+    console.log(this.gameState.cellsData);
+    view.clearCells();
+    view.setTurn(this.step);
   }
 }
