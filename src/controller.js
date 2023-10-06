@@ -25,6 +25,7 @@ export class Controller {
     view.onCellPress = (cell) => this.onCellPress(cell);
     view.themeSwitcher.onclick = () => this.toggleStyle();
     view.nullifyUser.onclick = () => this.nullifyUser();
+    view.messageURL.onclick = () => this.copperURL();
 
     console.log(this.roomID);
 
@@ -193,6 +194,43 @@ export class Controller {
     this.saveLocalState();
     view.hideNullifyUser();
     location.reload();
+  }
+
+  copperURL() {
+    this.copyTextToClipboard(view.messageURL);
+    // view.messageURL.execCommand("copy");
+    // view.messageURL.setSelectionRange(0, 99999);
+
+  //   const tempElement = document.createElement("textarea");
+  // tempElement.value = view.messageURL.innerText;
+  // document.body.appendChild(tempElement);
+
+  // // Выделяем текст в элементе
+  // tempElement.select();
+  // tempElement.setSelectionRange(0, 99999); // Для поддержки мобильных устройств
+
+  // // Копируем текст в буфер обмена
+  // document.execCommand("copy");
+
+  // // Удаляем временный элемент
+  // document.body.removeChild(tempElement);
+  }
+  copyTextToClipboard(text) {
+    if (!navigator.clipboard) {
+      // Браузер не поддерживает новый Clipboard API
+      return false;
+    }
+  
+    navigator.clipboard.writeText(text).then(
+      function () {
+        console.log("Текст успешно скопирован в буфер обмена");
+        return true;
+      },
+      function (err) {
+        console.error("Не удалось скопировать текст: ", err);
+        return false;
+      }
+    );
   }
 
   switchStep() {
