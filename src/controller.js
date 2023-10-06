@@ -3,25 +3,19 @@ import { view } from "./view";
 import { getRandomInt } from "./untils/random";
 
 export class Controller {
-  localState = {
+  state = {
     userID: "",
     userName: "",
     theme: localStorage.getItem("style") ?? "light",
-  };
-
-  gameState = {
-    roles: {
-      player1: "",
-      player2: "",
+    game: {
+      currentMove: "",
     },
-    cellsData: [],
-    currentMove: getRandomInt(1) === 0 ? "x" : "o",
   };
 
   async init() {
     this.restoreLocalState();
-    view.setStyle(this.localState.theme);
-    view.setTurn(this.gameState.currentMove);
+    view.setStyle(this.state.theme);
+
     view.onCellPress = (cell) => this.onCellPress(cell);
     view.themeSwitcher.onclick = () => this.toggleStyle();
     view.nullifyUser.onclick = () => this.nullifyUser();
@@ -29,11 +23,10 @@ export class Controller {
 
     console.log(this.roomID);
 
-
-
-    if (!this.localState.userName) {
+    if (!this.state.userName) {
       const userName = await view.showUserNameInput();
       const userID = btoa(encodeURIComponent(userName + Date.now()));
+
       // this.changeName(userName);
       this.updateLocalState({ userName, userID });
     }
@@ -46,54 +39,90 @@ export class Controller {
     this.generateRoomID();
     await server.initRoom(this.roomID);
 
-    this.sendUserReady(this.roomID);
-
     server.on[messages.userReady] = (data) => {
-      if (data.userID === this.localState.userID) return;
-      console.log(messages.userReady, data);
-      console.log("player1");
+      console.log(messages.userReady, { data });
+
+      if (data.userID.toString() === this.state.userID.toString()) {
+        // is this me?
+
+        this.state.users.player1 = data.userID;
+
+        console.log(`this is me`, {
+          state: this.state,
+        });
+
+        return;
+      }
+
+      // this is not this me?
+
       view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
       view.showField();
-      this.startGame();
     };
 
     server.on[messages.startGame] = (data) => {
-      if (data.userID === this.localState.userID) return;
-      console.log(messages.userReady, data);
+      if (data.userID === this.state.userID) return;
+      console.log(messages.startGame, data);
       view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
+      this.state.users.player2 = data.userID;
       console.log("player2");
 
+      this.startGame();
+
+      // view.setTurn(data.currentMove);
       view.showField();
     };
 
+    server.on[messages.stateUpdate] = (data) => this.onStateUpdated(data);
 
-    console.log(this.gameState);
-    server.on[messages.move] = (data) => this.onMove(data);
+    console.log(`Initial state`, this.state);
 
-    window.addEventListener("beforeunload", async (event) => {
-      event.returnValue = `Are you sure you want to leave?`;
+    this.sendUserReady();
+  }
 
-      server.closeConnection();
-    });
+  onStateUpdated(data) {
+    console.log("onStateUpdated", data);
+    this.state = data.state;
+
+    console.log("onMove", data);
+    this.state.game.cellsData[data.cell] = data.step;
+
+    view.updateCell(view.cells[data.cell], this.state.game.currentMove);
+
+    this.switchStep();
+
+    view.setTurn(this.state.game.currentMove);
+
+    this.checkDraw();
+    this.checkWin();
+
+    this.saveGameState();
   }
 
   startGame() {
     server.message(messages.startGame, {
-      userID: this.localState.userID,
-      userName: this.localState.userName,
+      userID: this.state.userID,
+      userName: this.state.userName,
+      nextMove: this.state.game.currentMove,
     });
 
     this.resetGame();
 
-    view.setTurn();
+    this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
+
+    server.message(messages.stateUpdate, {
+      state: this.state,
+    });
+
+    view.setTurn(this.state.game.currentMove);
   }
 
   restoreLocalState() {
@@ -103,20 +132,20 @@ export class Controller {
       return;
     }
 
-    this.localState = JSON.parse(storedState);
+    this.state = JSON.parse(storedState);
   }
 
   saveLocalState() {
-    localStorage.setItem("localState", JSON.stringify(this.localState));
+    localStorage.setItem("localState", JSON.stringify(this.state));
   }
 
   saveGameState() {
-    localStorage.setItem("gameState", JSON.stringify(this.gameState));
+    localStorage.setItem("gameState", JSON.stringify(this.state.game));
   }
 
   updateLocalState(state) {
-    this.localState = {
-      ...this.localState,
+    this.state = {
+      ...this.state,
       ...state,
     };
 
@@ -143,29 +172,15 @@ export class Controller {
 
   generateRoomID() {
     if (!this.roomID) {
-      this.roomID = this.localState.userID;
+      this.roomID = this.state.userID;
     }
   }
 
-  sendUserReady(roomID) {
+  sendUserReady() {
     server.message(messages.userReady, {
-      userID: this.localState.userID,
-      userName: this.localState.userName,
+      userID: this.state.userID,
+      userName: this.state.userName,
     });
-  }
-
-  onMove(data) {
-    console.log("onMove", data);
-    this.gameState.cellsData[data.cell] = data.step;
-
-    view.updateCell(view.cells[data.cell], this.gameState.currentMove);
-    view.setTurn(this.gameState.currentMove);
-
-    this.switchStep();
-    view.setTurn(this.gameState.currentMove);
-
-    this.checkDraw();
-    this.checkWin();
   }
 
   onUserConnected(message) {
@@ -174,7 +189,7 @@ export class Controller {
     // TODO: show user message: "${friendNam} joined game"
     console.log(data.name);
 
-    this.gameState.opponentName = data.name;
+    this.state.game.opponentName = data.name;
 
     // veiw.showMessage(`${data.name} joined game`);
 
@@ -182,14 +197,14 @@ export class Controller {
   }
 
   toggleStyle() {
-    const theme = this.localState.theme === "light" ? "dark" : "light";
+    const theme = this.state.theme === "light" ? "dark" : "light";
     view.setStyle(theme);
     this.updateLocalState({ theme });
   }
 
   nullifyUser() {
-    this.localState.userID = "";
-    this.localState.userName = "";
+    this.state.userID = "";
+    this.state.userName = "";
 
     this.saveLocalState();
     view.hideNullifyUser();
@@ -199,20 +214,27 @@ export class Controller {
   copperURL() {}
 
   switchStep() {
-    this.gameState.currentMove = this.gameState.currentMove === "x" ? "o" : "x";
-    console.log("switchStep", this.gameState.currentMove);
+    this.state.game.currentMove =
+      this.state.game.currentMove === "x" ? "o" : "x";
+    console.log("switchStep", this.state.game.currentMove);
+
+    // TODO update state here
   }
 
   onCellPress(cell) {
-    console.log("onCellPress", this.gameState.currentMove);
+    console.log("onCellPress", this.state.game.currentMove);
 
-    if (this.gameState.cellsData[view.cells.indexOf(cell)] !== "empty") {
+    if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty") {
       return;
     }
 
-    server.message(messages.move, {
+    this.state.field = {
       cell: view.cells.indexOf(cell),
-      step: this.gameState.currentMove,
+      step: this.state.game.currentMove,
+    };
+
+    server.message(messages.stateUpdate, {
+      state: this.state,
     });
   }
 
@@ -224,9 +246,9 @@ export class Controller {
     }
 
     view.setWin();
-    view.setComment(this.gameState.currentMove);
+    view.setComment(this.state.game.currentMove);
     view.setWinText(winner);
-    this.gameState.cellsData.fill("full");
+    this.state.game.cellsData.fill("full");
 
     setTimeout(() => this.resetGame(), 5000);
     console.log(`winner: ${winner}`);
@@ -260,9 +282,9 @@ export class Controller {
       const [pos1, pos2, pos3] = winningPositions[i];
 
       if (
-        this.gameState.cellsData[pos1] === winningMark &&
-        this.gameState.cellsData[pos2] === winningMark &&
-        this.gameState.cellsData[pos3] === winningMark
+        this.state.game.cellsData[pos1] === winningMark &&
+        this.state.game.cellsData[pos2] === winningMark &&
+        this.state.game.cellsData[pos3] === winningMark
       ) {
         return true;
       }
@@ -272,10 +294,10 @@ export class Controller {
   }
 
   checkDraw() {
-    for (let i = 0; i < this.gameState.cellsData.length; i++) {
+    for (let i = 0; i < this.state.game.cellsData.length; i++) {
       if (
-        this.gameState.cellsData[i] !== "x" &&
-        this.gameState.cellsData[i] !== "o"
+        this.state.game.cellsData[i] !== "x" &&
+        this.state.game.cellsData[i] !== "o"
       ) {
         return false;
       }
@@ -283,16 +305,16 @@ export class Controller {
     console.log("DRAW");
 
     view.setDraw();
-    view.setComment(this.gameState.currentMove);
+    view.setComment(this.state.game.currentMove);
 
     setTimeout(() => this.resetGame(), 5000);
   }
 
   resetGame() {
-    this.gameState.cellsData = new Array(9).fill("empty");
+    this.state.game.cellsData = new Array(9).fill("empty");
     this.saveGameState();
-    console.log(this.gameState.cellsData);
+    console.log(this.state.game.cellsData);
     view.clearCells();
-    view.setTurn(this.step);
+    // view.setTurn(this.step);
   }
 }

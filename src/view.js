@@ -29,7 +29,7 @@ export class View {
     this.createUserNameInput();
     this.createMessageDiv();
     this.createErrorDiv();
-    this.createURLmessage()
+    this.createURLmessage();
 
     this.createCells(cellDiv);
 
@@ -188,6 +188,10 @@ export class View {
   showMessageURL(message) {
     this.messageURL.innerHTML = message;
     this.messageURL.classList.remove("displayNone");
+    // TODO: replace url sting with add copy to clipboard button
+    //
+    // Copy the text inside the text field
+    // navigator.clipboard.writeText(copyText.value);
   }
 
   hideNullifyUser() {
@@ -206,6 +210,7 @@ export class View {
     this.ticTacToeDiv.classList.add("displayNone");
   }
 
+  // TODO: rename to user name input
   hideRoomNameInput() {
     this.userNameInputDiv.classList.add("displayNone");
     this.ticTacToeDiv.classList.remove("displayNone");

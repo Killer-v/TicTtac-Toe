@@ -6,6 +6,7 @@ export const messages = {
   userReady: "userReady",
   startGame: "startGame",
   move: "move",
+  stateUpdate: "stateUpdate",
 };
 
 class Server {
@@ -66,4 +67,3 @@ class Server {
 }
 
 export const server = new Server();
-
