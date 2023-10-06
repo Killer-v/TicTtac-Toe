@@ -29,22 +29,33 @@ export class View {
     this.createUserNameInput();
     this.createMessageDiv();
     this.createErrorDiv();
+    this.createURLmessage()
 
     this.createCells(cellDiv);
 
     this.hideField();
   }
-  
+
+  createURLmessage() {
+    this.messageURL = createDiv("messageURL");
+    this.messageURL.classList.add("displayNone");
+    this.parent.appendChild(this.messageURL);
+  }
+
   createErrorDiv() {
     this.errorMessage = createDiv("errorMessage");
     this.errorMessage.classList.add("displayNone");
     this.parent.appendChild(this.errorMessage);
   }
-  
+
   createMessageDiv() {
+    this.messageDiv = createDiv("messageDiv");
+    this.messageDiv.classList.add("displayNone");
+
     this.message = createDiv("message");
-    this.message.classList.add("displayNone");
-    this.parent.appendChild(this.message);
+
+    this.messageDiv.appendChild(this.message);
+    this.parent.appendChild(this.messageDiv);
   }
 
   createUserNameInput() {
@@ -163,11 +174,20 @@ export class View {
   showMessage(message) {
     this.hideError();
     this.message.innerHTML = message;
-    this.message.classList.remove("displayNone");
+    this.messageDiv.classList.remove("displayNone");
   }
 
   showNullifyUser() {
     this.nullifyUser.classList.remove("displayNone");
+  }
+
+  showField() {
+    this.ticTacToeDiv.classList.remove("displayNone");
+  }
+
+  showMessageURL(message) {
+    this.messageURL.innerHTML = message;
+    this.messageURL.classList.remove("displayNone");
   }
 
   hideNullifyUser() {
@@ -179,7 +199,7 @@ export class View {
   }
 
   hideMessage() {
-    this.message.classList.add("displayNone");
+    this.messageDiv.classList.add("displayNone");
   }
 
   hideField() {
@@ -191,8 +211,8 @@ export class View {
     this.ticTacToeDiv.classList.remove("displayNone");
   }
 
-  showField() {
-    this.ticTacToeDiv.classList.remove("displayNone");
+  hideMessageURL() {
+    this.messageURL.classList.add("displayNone");
   }
 }
 

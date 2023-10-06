@@ -26,6 +26,8 @@ export class Controller {
     view.themeSwitcher.onclick = () => this.toggleStyle();
     view.nullifyUser.onclick = () => this.nullifyUser();
 
+    console.log(this.roomID);
+
 
 
     if (!this.localState.userName) {
@@ -36,6 +38,7 @@ export class Controller {
     }
 
     view.showMessage("Waiting for opponent...");
+    view.showMessageURL(window.location.href);
     view.hideRoomNameInput();
     view.showNullifyUser();
 
@@ -48,6 +51,7 @@ export class Controller {
       if (data.userID === this.localState.userID) return;
       console.log(messages.userReady, data);
       console.log("player1");
+      view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
@@ -59,6 +63,7 @@ export class Controller {
     server.on[messages.startGame] = (data) => {
       if (data.userID === this.localState.userID) return;
       console.log(messages.userReady, data);
+      view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
@@ -148,8 +153,6 @@ export class Controller {
     });
   }
 
-
-
   onMove(data) {
     console.log("onMove", data);
     this.gameState.cellsData[data.cell] = data.step;
@@ -177,15 +180,6 @@ export class Controller {
     // this.assignUserRoles();
   }
 
-  // TODO: call this method when user enter name and press OK
-  // changeName(name) {
-  //   this.gameState.currentUserName = name;
-
-  //   server.changeName({
-  //     name: name,
-  //   });
-  // }
-
   toggleStyle() {
     const theme = this.localState.theme === "light" ? "dark" : "light";
     view.setStyle(theme);
@@ -206,17 +200,12 @@ export class Controller {
     console.log("switchStep", this.gameState.currentMove);
   }
 
-  // view.cells.
-
   onCellPress(cell) {
     console.log("onCellPress", this.gameState.currentMove);
 
     if (this.gameState.cellsData[view.cells.indexOf(cell)] !== "empty") {
       return;
     }
-
-    console.log("none press");
-
 
     server.message(messages.move, {
       cell: view.cells.indexOf(cell),
