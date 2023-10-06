@@ -11,7 +11,7 @@ export class View {
     this.themeSwitcher = createButton("", "buttonTopic");
     this.parent.appendChild(this.themeSwitcher);
 
-    this.nullifyUser = createButton("", "buttonNullifyUser");
+    this.nullifyUser = createButton("", "buttonNullifyUser displayNone");
     this.parent.appendChild(this.nullifyUser);
 
     const playerDiv = createDiv("playerDiv");
@@ -149,8 +149,6 @@ export class View {
     });
   }
 
-
-
   showError(message) {
     this.hideMessage();
     this.errorMessage.innerHTML = message;
@@ -166,6 +164,14 @@ export class View {
     this.hideError();
     this.message.innerHTML = message;
     this.message.classList.remove("displayNone");
+  }
+
+  showNullifyUser() {
+    this.nullifyUser.classList.remove("displayNone");
+  }
+
+  hideNullifyUser() {
+    this.nullifyUser.classList.add("displayNone");
   }
 
   hideError() {

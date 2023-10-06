@@ -37,6 +37,7 @@ export class Controller {
 
     view.showMessage("Waiting for opponent...");
     view.hideRoomNameInput();
+    view.showNullifyUser();
 
     this.generateRoomID();
     await server.initRoom(this.roomID);
@@ -196,6 +197,7 @@ export class Controller {
     this.localState.userName = "";
 
     this.saveLocalState();
+    view.hideNullifyUser();
     location.reload();
   }
 
