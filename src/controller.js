@@ -309,6 +309,6 @@ export class Controller {
 
     this.saveGameState();
     view.clearCells();
-    view.setTurn(this.step);
+    view.setTurn(this.state.game.currentMove);
   }
 }
