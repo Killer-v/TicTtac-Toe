@@ -44,7 +44,6 @@ export class Controller {
       console.log(data);
 
       if (data.userID.toString() === this.state.userID.toString()) {
-        // is this me?
 
         console.log(`this is me`, {
           state: this.state,
@@ -83,7 +82,6 @@ export class Controller {
   onStateUpdated(data) {
     console.log("onStateUpdated", data);
     this.state = data.state;
-    console.log("0",this.state.game.cellsData)
 
     console.log("onMove", data);
 
@@ -91,7 +89,6 @@ export class Controller {
     data.step = this.state.game.currentMove;
     
     this.state.game.cellsData[data.cell] = data.step;
-    console.log("1",this.state.game.cellsData)
 
     view.updateCell(view.cells[data.cell], this.state.game.currentMove);
 
@@ -180,14 +177,9 @@ export class Controller {
   onUserConnected(message) {
     const data = JSON.parse(message.data);
 
-    // TODO: show user message: "${friendNam} joined game"
     console.log(data.name);
 
     this.state.game.opponentName = data.name;
-
-    // veiw.showMessage(`${data.name} joined game`);
-
-    // this.assignUserRoles();
   }
 
   toggleStyle() {
@@ -212,7 +204,6 @@ export class Controller {
       this.state.game.currentMove === "x" ? "o" : "x";
     console.log("switchStep", this.state.game.currentMove);
 
-    // TODO update state here
   }
 
   onCellPress(cell) {
