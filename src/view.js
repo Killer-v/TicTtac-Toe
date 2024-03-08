@@ -14,6 +14,15 @@ export class View {
     this.nullifyUser = createButton("", "buttonNullifyUser displayNone");
     this.parent.appendChild(this.nullifyUser);
 
+    this.copyURL = createButton("COPY LINK", "buttonCopy");
+    this.copyURL.classList.add("displayNone");
+    this.parent.appendChild(this.copyURL);
+
+    // TODO: replace url sting with add copy to clipboard button
+    //
+    // Copy the text inside the text field
+    // navigator.clipboard.writeText(copyText.value);
+
     const playerDiv = createDiv("playerDiv");
     this.ticTacToeDiv.appendChild(playerDiv);
 
@@ -114,6 +123,7 @@ export class View {
   }
 
   updateCell(cell, step) {
+    console.log(step)
     if (step === "x") {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
@@ -188,10 +198,14 @@ export class View {
   showMessageURL(message) {
     this.messageURL.innerHTML = message;
     this.messageURL.classList.remove("displayNone");
-    // TODO: replace url sting with add copy to clipboard button
-    //
-    // Copy the text inside the text field
-    // navigator.clipboard.writeText(copyText.value);
+  }
+
+  showButtonCopyURL(url) {
+    this.copyURL.classList.remove("displayNone");
+  }
+
+  hideButtonCopyURL() {
+    this.copyURL.classList.add("displayNone");
   }
 
   hideNullifyUser() {

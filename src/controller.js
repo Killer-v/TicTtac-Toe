@@ -9,6 +9,7 @@ export class Controller {
     theme: localStorage.getItem("style") ?? "light",
     game: {
       currentMove: "",
+      cellsData: [],
     },
   };
 
@@ -19,7 +20,7 @@ export class Controller {
     view.onCellPress = (cell) => this.onCellPress(cell);
     view.themeSwitcher.onclick = () => this.toggleStyle();
     view.nullifyUser.onclick = () => this.nullifyUser();
-    view.messageURL.onclick = () => this.copperURL();
+    // view.messageURL.onclick = () => this.copperURL();
 
     console.log(this.roomID);
 
@@ -27,7 +28,6 @@ export class Controller {
       const userName = await view.showUserNameInput();
       const userID = btoa(encodeURIComponent(userName + Date.now()));
 
-      // this.changeName(userName);
       this.updateLocalState({ userName, userID });
     }
 
@@ -41,20 +41,16 @@ export class Controller {
 
     server.on[messages.userReady] = (data) => {
       console.log(messages.userReady, { data });
+      console.log(data);
 
       if (data.userID.toString() === this.state.userID.toString()) {
         // is this me?
 
-        this.state.users.player1 = data.userID;
-
         console.log(`this is me`, {
           state: this.state,
         });
-
         return;
       }
-
-      // this is not this me?
 
       view.hideMessageURL();
 
@@ -62,6 +58,7 @@ export class Controller {
       setTimeout(() => view.hideMessage(), 3000);
 
       view.showField();
+      this.startGame();
     };
 
     server.on[messages.startGame] = (data) => {
@@ -72,12 +69,7 @@ export class Controller {
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
-      this.state.users.player2 = data.userID;
-      console.log("player2");
-
-      this.startGame();
-
-      // view.setTurn(data.currentMove);
+      view.setTurn(data.currentMove);
       view.showField();
     };
 
@@ -93,6 +85,8 @@ export class Controller {
     this.state = data.state;
 
     console.log("onMove", data);
+
+    data.cell = this.state.field.cell;
     this.state.game.cellsData[data.cell] = data.step;
 
     view.updateCell(view.cells[data.cell], this.state.game.currentMove);
@@ -108,21 +102,28 @@ export class Controller {
   }
 
   startGame() {
+    // server.message(messages.startGame, {
+    //   userID: this.state.userID,
+    //   userName: this.state.userName,
+    // });
+
+    // this.resetGame();
+
+    // this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
+
+    // server.message(messages.stateUpdate, {
+    //   state: this.state,
+    // });
+
+    // view.setTurn(this.state.game.currentMove);
     server.message(messages.startGame, {
       userID: this.state.userID,
       userName: this.state.userName,
-      nextMove: this.state.game.currentMove,
     });
 
     this.resetGame();
 
-    this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
-
-    server.message(messages.stateUpdate, {
-      state: this.state,
-    });
-
-    view.setTurn(this.state.game.currentMove);
+    view.setTurn();
   }
 
   restoreLocalState() {
@@ -211,7 +212,7 @@ export class Controller {
     location.reload();
   }
 
-  copperURL() {}
+  copperURL() { }
 
   switchStep() {
     this.state.game.currentMove =
@@ -246,7 +247,7 @@ export class Controller {
     }
 
     view.setWin();
-    view.setComment(this.state.game.currentMove);
+    view.setComment(this.state.game.cellsData);
     view.setWinText(winner);
     this.state.game.cellsData.fill("full");
 
@@ -312,9 +313,16 @@ export class Controller {
 
   resetGame() {
     this.state.game.cellsData = new Array(9).fill("empty");
+
+    this.setState({
+      game: {
+        ...this.state.game,  // Сначала копируем текущее состояние game
+        cellsData: new Array(9).fill("empty")  // Затем присваиваем новое значение свойству currentMove
+      }
+    });
     this.saveGameState();
-    console.log(this.state.game.cellsData);
+    // console.log(this.state.game.currentMove);
     view.clearCells();
-    // view.setTurn(this.step);
+    view.setTurn(this.step);
   }
 }
