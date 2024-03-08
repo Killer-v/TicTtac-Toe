@@ -83,17 +83,24 @@ export class Controller {
   onStateUpdated(data) {
     console.log("onStateUpdated", data);
     this.state = data.state;
+    console.log("0",this.state.game.cellsData)
 
     console.log("onMove", data);
 
     data.cell = this.state.field.cell;
+    data.step = this.state.game.currentMove;
+    
     this.state.game.cellsData[data.cell] = data.step;
+    console.log("1",this.state.game.cellsData)
 
     view.updateCell(view.cells[data.cell], this.state.game.currentMove);
 
     this.switchStep();
+    
 
     view.setTurn(this.state.game.currentMove);
+
+    
 
     this.checkDraw();
     this.checkWin();
@@ -102,20 +109,6 @@ export class Controller {
   }
 
   startGame() {
-    // server.message(messages.startGame, {
-    //   userID: this.state.userID,
-    //   userName: this.state.userName,
-    // });
-
-    // this.resetGame();
-
-    // this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
-
-    // server.message(messages.stateUpdate, {
-    //   state: this.state,
-    // });
-
-    // view.setTurn(this.state.game.currentMove);
     server.message(messages.startGame, {
       userID: this.state.userID,
       userName: this.state.userName,
@@ -228,12 +221,12 @@ export class Controller {
     if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty") {
       return;
     }
-
+    
     this.state.field = {
       cell: view.cells.indexOf(cell),
       step: this.state.game.currentMove,
     };
-
+    
     server.message(messages.stateUpdate, {
       state: this.state,
     });
@@ -314,14 +307,7 @@ export class Controller {
   resetGame() {
     this.state.game.cellsData = new Array(9).fill("empty");
 
-    this.setState({
-      game: {
-        ...this.state.game,  // Сначала копируем текущее состояние game
-        cellsData: new Array(9).fill("empty")  // Затем присваиваем новое значение свойству currentMove
-      }
-    });
     this.saveGameState();
-    // console.log(this.state.game.currentMove);
     view.clearCells();
     view.setTurn(this.step);
   }
