@@ -90,6 +90,22 @@ export class View {
     }
   }
 
+  blockCells() {
+    this.cells.forEach(cell => {
+      if (!cell.classList.contains('empty')) {
+        cell.classList.add("block");
+      }
+    });
+  }
+
+  oppenCells() {
+    this.cells.forEach(cell => {
+      if (!cell.classList.contains('empty')) {
+        cell.classList.remove("block");
+      }
+    });
+  }
+
   setTurn(turn) {
     if (turn === "x") {
       this.turnPointer.innerHTML = "X Turn";
@@ -145,7 +161,7 @@ export class View {
   clearCells() {
     for (const cell of this.cells) {
       cell.classList.add("full");
-      cell.classList.remove("o", "x", "stepX", "stepO", "empty");
+      cell.classList.remove("o", "x", "stepX", "stepO", "empty", "block");
     }
 
     this.parent.classList.remove("win", "draw");

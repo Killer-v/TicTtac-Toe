@@ -51,6 +51,7 @@ class Server {
           case messages.userReady:
           case messages.startGame:
             users.set(parsedData.userID, parsedData.userName);
+            // console.log('Состояние комнаты:', this.roomState.users);
             break;
         }
       });

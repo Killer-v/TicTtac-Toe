@@ -193,6 +193,10 @@ body {
   max-height: 60vh;
 }
 
+#parent .block {
+  background-color: #38383882;
+}
+
 @media (max-width: 328px) {
   .cellDiv {
     gap: 6px;

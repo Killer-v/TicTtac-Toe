@@ -20,7 +20,7 @@ export class Controller {
     view.onCellPress = (cell) => this.onCellPress(cell);
     view.themeSwitcher.onclick = () => this.toggleStyle();
     view.nullifyUser.onclick = () => this.nullifyUser();
-    // view.messageURL.onclick = () => this.copperURL();
+    view.messageURL.onclick = () => this.copperURL();
 
     console.log(this.roomID);
 
@@ -58,18 +58,24 @@ export class Controller {
 
       view.showField();
       this.startGame();
+      this.resetGame();
     };
 
     server.on[messages.startGame] = (data) => {
       if (data.userID === this.state.userID) return;
+
       console.log(messages.startGame, data);
       view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
+      this.state.currentMove = data.currentMove;
+
       view.setTurn(data.currentMove);
       view.showField();
+      this.resetGame();
+      console.log(messages.startGame, data);
     };
 
     server.on[messages.stateUpdate] = (data) => this.onStateUpdated(data);
@@ -81,37 +87,72 @@ export class Controller {
 
   onStateUpdated(data) {
     console.log("onStateUpdated", data);
-    this.state = data.state;
 
-    console.log("onMove", data);
+    this.state.game = data.state.game;
 
-    data.cell = this.state.field.cell;
+    data.cell = this.state.game.field.cell;
     data.step = this.state.game.currentMove;
-    
+
     this.state.game.cellsData[data.cell] = data.step;
 
     view.updateCell(view.cells[data.cell], this.state.game.currentMove);
 
     this.switchStep();
-    
+
 
     view.setTurn(this.state.game.currentMove);
 
-    
 
     this.checkDraw();
     this.checkWin();
 
     this.saveGameState();
+
+    if (this.state.userName === data.state.userName) {
+      console.log(`User on clicked`);
+      this.blockCells();
+      view.blockCells();
+
+    } else if (this.state.userName !== data.state.userName) {
+      console.log("change");
+      this.oppenCells();
+      view.oppenCells();
+    }
+
+    console.log('jj', this.state.userID, this.state.userName);
+
+  }
+
+  blockCells() {
+    this.state.game.cellsData.forEach((cell, index) => {
+      if (this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o") {
+
+        this.state.game.cellsData[index] = "blocked";
+        console.log(this.state.game.cellsData);
+      }
+    });
+  }
+
+  oppenCells() {
+    this.state.game.cellsData.forEach((cell, index) => {
+      if (this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o") {
+
+        this.state.game.cellsData[index] = "empty";
+      }
+    });
+
   }
 
   startGame() {
+    this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
+
     server.message(messages.startGame, {
       userID: this.state.userID,
       userName: this.state.userName,
+      currentMove: this.state.currentMove,
     });
-
-    this.resetGame();
 
     view.setTurn();
   }
@@ -197,7 +238,25 @@ export class Controller {
     location.reload();
   }
 
-  copperURL() { }
+  copperURL() {
+    // Создаем новый элемент textarea для временного хранения текста
+    const textarea = document.createElement('textarea');
+
+    // Задаем текст из переменной для копирования в textarea
+    textarea.value = window.location.href;
+
+    // Добавляем textarea в DOM
+    document.body.appendChild(textarea);
+
+    // Выбираем весь текст в textarea
+    textarea.select();
+
+    // Копируем выделенный текст в буфер обмена
+    document.execCommand('copy');
+
+    // Удаляем временный textarea из DOM
+    document.body.removeChild(textarea);
+  }
 
   switchStep() {
     this.state.game.currentMove =
@@ -209,15 +268,16 @@ export class Controller {
   onCellPress(cell) {
     console.log("onCellPress", this.state.game.currentMove);
 
-    if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty") {
+    if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty" ||
+      this.state.game.cellsData[view.cells.indexOf(cell)] === "blocked") {
       return;
     }
-    
-    this.state.field = {
+
+    this.state.game.field = {
       cell: view.cells.indexOf(cell),
       step: this.state.game.currentMove,
     };
-    
+
     server.message(messages.stateUpdate, {
       state: this.state,
     });
@@ -300,6 +360,6 @@ export class Controller {
 
     this.saveGameState();
     view.clearCells();
-    view.setTurn(this.state.game.currentMove);
+    console.log("resetGame", this.state.game.cellsData);
   }
 }
