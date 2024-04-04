@@ -14,15 +14,6 @@ export class View {
     this.nullifyUser = createButton("", "buttonNullifyUser displayNone");
     this.parent.appendChild(this.nullifyUser);
 
-    this.copyURL = createButton("COPY LINK", "buttonCopy");
-    this.copyURL.classList.add("displayNone");
-    this.parent.appendChild(this.copyURL);
-
-    // TODO: replace url sting with add copy to clipboard button
-    //
-    // Copy the text inside the text field
-    // navigator.clipboard.writeText(copyText.value);
-
     const playerDiv = createDiv("playerDiv");
     this.ticTacToeDiv.appendChild(playerDiv);
 
@@ -38,17 +29,32 @@ export class View {
     this.createUserNameInput();
     this.createMessageDiv();
     this.createErrorDiv();
+
+    this.createURLdiv();
     this.createURLmessage();
+    this.createMessageURLcopied();
 
     this.createCells(cellDiv);
 
     this.hideField();
   }
 
+  createMessageURLcopied () {
+    this.messageURLcopied = createDiv("messageURLcopied");
+    this.messageURLcopied.innerHTML = "URL Copied ! ";
+    this.messageURLcopied.classList.add("displayNone");
+    this.parent.appendChild(this.messageURLcopied);
+  }
+
   createURLmessage() {
     this.messageURL = createDiv("messageURL");
     this.messageURL.classList.add("displayNone");
-    this.parent.appendChild(this.messageURL);
+    this.messageURLdiv.appendChild(this.messageURL);
+  }
+
+  createURLdiv() {
+    this.messageURLdiv = createDiv("messageURLdiv");
+    this.messageDiv.appendChild(this.messageURLdiv);
   }
 
   createErrorDiv() {
@@ -211,17 +217,17 @@ export class View {
     this.ticTacToeDiv.classList.remove("displayNone");
   }
 
-  showMessageURL(message) {
-    this.messageURL.innerHTML = message;
+  showMessageURL() {
+    this.messageURL.innerHTML = "Coppy URL";
     this.messageURL.classList.remove("displayNone");
   }
 
-  showButtonCopyURL(url) {
-    this.copyURL.classList.remove("displayNone");
+  showMessageURLcopied () {
+    this.messageURLcopied.classList.remove("displayNone");
   }
 
-  hideButtonCopyURL() {
-    this.copyURL.classList.add("displayNone");
+  hideMessageURLcopied () {
+    this.messageURLcopied.classList.add("displayNone");
   }
 
   hideNullifyUser() {
@@ -240,7 +246,6 @@ export class View {
     this.ticTacToeDiv.classList.add("displayNone");
   }
 
-  // TODO: rename to user name input
   hideRoomNameInput() {
     this.userNameInputDiv.classList.add("displayNone");
     this.ticTacToeDiv.classList.remove("displayNone");

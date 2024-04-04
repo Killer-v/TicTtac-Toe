@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap');
+
 body {
   width: 100%;
   height: 100vh;
@@ -7,7 +8,7 @@ body {
   font-weight: 200;
 }
 
-.displayNone {
+body .displayNone {
   display: none;
 }
 
@@ -43,17 +44,47 @@ body {
   background-color: rgb(0, 0, 0);
 }
 
-.messageURL {
+.messageURLdiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4%;
   position: absolute;
-  width: 65%;
-  height: 19%;
-  top: 46%;
+  width: 100%;
+  height: 10%;
+  top: 45%;
   font-size: 2vh;
   color: rgb(0, 0, 0);
   background-color: rgba(255, 255, 255, 0.641);
 }
 
-.dark .messageURL {
+.messageURL {
+  background: #747c00;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 19vw;
+  height: 4vw;
+  border-radius: 10px;
+}
+
+.messageURLcopied {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #d1d3c6;
+  background-color: #424242f5;
+  position: absolute;
+  width: 23vw;
+  height: 7vw;
+  top: 5%;
+  left: 38%;
+  font-size: 3vh;
+  font-weight: 700;
+  z-index: 1111111;
+}
+
+.dark .messageURLdiv {
   color: rgb(255, 255, 255);
   background-color: rgba(0, 0, 0, 0.633);
 }
@@ -126,7 +157,7 @@ body {
   background-image: url(/img/buttonTopic.svg);
   background-size: 100% 100%;
   background-repeat: no-repeat;
-  width: 11%;
+  width: 7%;
   height: 7%;
   outline: none;
   cursor: pointer;
@@ -281,12 +312,32 @@ body {
     font-size: 6vw;
   }
 
-  .messageURL {
+  .messageURLdiv {
+    font-size: 2vw;
+    width: 97%;
+    top: 38%;
+  }
+
+  .messageURLcopied {
     font-size: 2vw;
   }
 
   .errorMessage {
     padding-top: 100vw;
     font-size: 7vw;
+  }
+}
+
+@media (min-width: 550px) and (max-height: 465px) {
+  .messageURL {
+    width: 18vh;
+    height: 6vh;
+  }
+
+  .messageURLcopied {
+    width: 27vh;
+    height: 10vh;
+    font-size: 4vh;
+    left: auto;
   }
 }

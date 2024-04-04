@@ -32,7 +32,7 @@ export class Controller {
     }
 
     view.showMessage("Waiting for opponent...");
-    view.showMessageURL(window.location.href);
+    view.showMessageURL();
     view.hideRoomNameInput();
     view.showNullifyUser();
 
@@ -239,23 +239,21 @@ export class Controller {
   }
 
   copperURL() {
-    // Создаем новый элемент textarea для временного хранения текста
     const textarea = document.createElement('textarea');
 
-    // Задаем текст из переменной для копирования в textarea
     textarea.value = window.location.href;
 
-    // Добавляем textarea в DOM
     document.body.appendChild(textarea);
 
-    // Выбираем весь текст в textarea
     textarea.select();
 
-    // Копируем выделенный текст в буфер обмена
     document.execCommand('copy');
 
-    // Удаляем временный textarea из DOM
     document.body.removeChild(textarea);
+
+    view.showMessageURLcopied();
+      setTimeout(() => view.hideMessageURLcopied(), 2000);
+    
   }
 
   switchStep() {
