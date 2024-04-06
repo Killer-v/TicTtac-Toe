@@ -39,7 +39,7 @@ export class View {
     this.hideField();
   }
 
-  createMessageURLcopied () {
+  createMessageURLcopied() {
     this.messageURLcopied = createDiv("messageURLcopied");
     this.messageURLcopied.innerHTML = "URL Copied ! ";
     this.messageURLcopied.classList.add("displayNone");
@@ -97,16 +97,20 @@ export class View {
   }
 
   blockCells() {
-    this.cells.forEach(cell => {
-      if (!cell.classList.contains('empty')) {
+    this.isBlocked = true;
+
+    this.cells.forEach((cell) => {
+      if (!cell.classList.contains("empty")) {
         cell.classList.add("block");
       }
     });
   }
 
-  oppenCells() {
-    this.cells.forEach(cell => {
-      if (!cell.classList.contains('empty')) {
+  unblockCells() {
+    this.isBlocked = false;
+
+    this.cells.forEach((cell) => {
+      if (!cell.classList.contains("empty")) {
         cell.classList.remove("block");
       }
     });
@@ -145,7 +149,7 @@ export class View {
   }
 
   updateCell(cell, step) {
-    console.log(step)
+    console.log(step);
     if (step === "x") {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
@@ -222,11 +226,11 @@ export class View {
     this.messageURL.classList.remove("displayNone");
   }
 
-  showMessageURLcopied () {
+  showMessageURLcopied() {
     this.messageURLcopied.classList.remove("displayNone");
   }
 
-  hideMessageURLcopied () {
+  hideMessageURLcopied() {
     this.messageURLcopied.classList.add("displayNone");
   }
 

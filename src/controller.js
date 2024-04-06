@@ -11,6 +11,10 @@ export class Controller {
       currentMove: "",
       cellsData: [],
     },
+    opponent: {
+      userID: "",
+      userName: "",
+    },
   };
 
   async init() {
@@ -44,7 +48,6 @@ export class Controller {
       console.log(data);
 
       if (data.userID.toString() === this.state.userID.toString()) {
-
         console.log(`this is me`, {
           state: this.state,
         });
@@ -56,12 +59,22 @@ export class Controller {
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
+      this.state.opponent = data;
+
       view.showField();
       this.startGame();
       this.resetGame();
     };
 
     server.on[messages.startGame] = (data) => {
+      console.log("startGame", data);
+
+      if (data.currentMove === this.state.userID) {
+        view.unblockCells();
+      } else {
+        view.blockCells();
+      }
+
       if (data.userID === this.state.userID) return;
 
       console.log(messages.startGame, data);
@@ -99,9 +112,7 @@ export class Controller {
 
     this.switchStep();
 
-
     view.setTurn(this.state.game.currentMove);
-
 
     this.checkDraw();
     this.checkWin();
@@ -112,22 +123,21 @@ export class Controller {
       console.log(`User on clicked`);
       this.blockCells();
       view.blockCells();
-
     } else if (this.state.userName !== data.state.userName) {
       console.log("change");
       this.oppenCells();
-      view.oppenCells();
+      view.unblockCells();
     }
 
-    console.log('jj', this.state.userID, this.state.userName);
-
+    console.log("jj", this.state.userID, this.state.userName);
   }
 
   blockCells() {
     this.state.game.cellsData.forEach((cell, index) => {
-      if (this.state.game.cellsData[index] !== "x" &&
-        this.state.game.cellsData[index] !== "o") {
-
+      if (
+        this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o"
+      ) {
         this.state.game.cellsData[index] = "blocked";
         console.log(this.state.game.cellsData);
       }
@@ -136,17 +146,18 @@ export class Controller {
 
   oppenCells() {
     this.state.game.cellsData.forEach((cell, index) => {
-      if (this.state.game.cellsData[index] !== "x" &&
-        this.state.game.cellsData[index] !== "o") {
-
+      if (
+        this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o"
+      ) {
         this.state.game.cellsData[index] = "empty";
       }
     });
-
   }
 
   startGame() {
-    this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
+    this.state.currentMove =
+      getRandomInt(1) === 0 ? this.state.userID : this.state.opponent.userID;
 
     server.message(messages.startGame, {
       userID: this.state.userID,
@@ -239,7 +250,7 @@ export class Controller {
   }
 
   copperURL() {
-    const textarea = document.createElement('textarea');
+    const textarea = document.createElement("textarea");
 
     textarea.value = window.location.href;
 
@@ -247,27 +258,31 @@ export class Controller {
 
     textarea.select();
 
-    document.execCommand('copy');
+    document.execCommand("copy");
 
     document.body.removeChild(textarea);
 
     view.showMessageURLcopied();
-      setTimeout(() => view.hideMessageURLcopied(), 2000);
-    
+    setTimeout(() => view.hideMessageURLcopied(), 2000);
   }
 
   switchStep() {
     this.state.game.currentMove =
-      this.state.game.currentMove === "x" ? "o" : "x";
+      this.state.game.currentMove === this.userID
+        ? this.opponent.userID
+        : this.userID;
     console.log("switchStep", this.state.game.currentMove);
-
   }
 
   onCellPress(cell) {
+    if (view.isBlocked) return;
+
     console.log("onCellPress", this.state.game.currentMove);
 
-    if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty" ||
-      this.state.game.cellsData[view.cells.indexOf(cell)] === "blocked") {
+    if (
+      this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty" ||
+      this.state.game.cellsData[view.cells.indexOf(cell)] === "blocked"
+    ) {
       return;
     }
 
