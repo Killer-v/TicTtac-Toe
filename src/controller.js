@@ -12,6 +12,10 @@ export class Controller {
       currentMove: "",
       cellsData: [],
     },
+    opponent: {
+      userID: "",
+      userName: "",
+    },
   };
 
   async init() {
@@ -48,7 +52,6 @@ export class Controller {
       }
 
       if (data.userID.toString() === this.state.userID.toString()) {
-
         console.log(`this is me`, {
           state: this.state,
         });
@@ -59,6 +62,8 @@ export class Controller {
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
+
+      this.state.opponent = data;
 
       view.showField();
       this.startGame();
@@ -140,9 +145,10 @@ export class Controller {
 
   blockCells() {
     this.state.game.cellsData.forEach((cell, index) => {
-      if (this.state.game.cellsData[index] !== "x" &&
-        this.state.game.cellsData[index] !== "o") {
-
+      if (
+        this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o"
+      ) {
         this.state.game.cellsData[index] = "blocked";
         console.log(this.state.game.cellsData);
       }
@@ -151,17 +157,18 @@ export class Controller {
 
   unblockCells() {
     this.state.game.cellsData.forEach((cell, index) => {
-      if (this.state.game.cellsData[index] !== "x" &&
-        this.state.game.cellsData[index] !== "o") {
-
+      if (
+        this.state.game.cellsData[index] !== "x" &&
+        this.state.game.cellsData[index] !== "o"
+      ) {
         this.state.game.cellsData[index] = "empty";
       }
     });
-
   }
 
   startGame() {
-    this.state.currentMove = getRandomInt(1) === 0 ? "x" : "o";
+    this.state.currentMove =
+      getRandomInt(1) === 0 ? this.state.userID : this.state.opponent.userID;
 
     server.message(messages.startGame, {
       userID: this.state.userID,
@@ -254,7 +261,7 @@ export class Controller {
   }
 
   copperURL() {
-    const textarea = document.createElement('textarea');
+    const textarea = document.createElement("textarea");
 
     textarea.value = window.location.href;
 
@@ -262,7 +269,7 @@ export class Controller {
 
     textarea.select();
 
-    document.execCommand('copy');
+    document.execCommand("copy");
 
     document.body.removeChild(textarea);
 
@@ -273,16 +280,21 @@ export class Controller {
 
   switchStep() {
     this.state.game.currentMove =
-      this.state.game.currentMove === "x" ? "o" : "x";
+      this.state.game.currentMove === this.userID
+        ? this.opponent.userID
+        : this.userID;
     console.log("switchStep", this.state.game.currentMove);
-
   }
 
   onCellPress(cell) {
+    if (view.isBlocked) return;
+
     console.log("onCellPress", this.state.game.currentMove);
 
-    if (this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty" ||
-      this.state.game.cellsData[view.cells.indexOf(cell)] === "blocked") {
+    if (
+      this.state.game.cellsData[view.cells.indexOf(cell)] !== "empty" ||
+      this.state.game.cellsData[view.cells.indexOf(cell)] === "blocked"
+    ) {
       return;
     }
 

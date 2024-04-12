@@ -143,7 +143,7 @@ export class View {
   }
 
   updateCell(cell, step) {
-    console.log(step)
+    console.log(step);
     if (step === "x") {
       cell.classList.add("x", "empty", "stepX");
       cell.classList.remove("full");
