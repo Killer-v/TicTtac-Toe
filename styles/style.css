@@ -199,11 +199,12 @@ body .displayNone {
 }
 
 .player {
-  font-size: 7vh;
+  font-size: 5vh;
 }
 
 .dark .player {
   color: rgba(227, 227, 227, 1);
+  white-space: nowrap;
 }
 
 .win .player {
@@ -276,7 +277,7 @@ body .displayNone {
   background-image: url(/img/full-darkBlock-O.svg);
 }
 
-@media (max-width: 550px) and (min-height: 465px) {
+@media (max-width: 525px) and (min-height: 560px) {
   .tictactoeDiv {
     padding: 10px;
   }
@@ -290,7 +291,7 @@ body .displayNone {
   }
 
   .playerP {
-    font-size: 4vw;
+    font-size: 6vw;
   }
 
   .roomNameInputDiv {

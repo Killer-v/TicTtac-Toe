@@ -7,6 +7,7 @@ export class Controller {
     userID: "",
     userName: "",
     theme: localStorage.getItem("style") ?? "light",
+    playerWalks: '',
     game: {
       currentMove: "",
       cellsData: [],
@@ -41,7 +42,10 @@ export class Controller {
 
     server.on[messages.userReady] = (data) => {
       console.log(messages.userReady, { data });
-      console.log(data);
+
+      if (data.userID !== this.state.userID) {
+        this.state.playerWalks = data.userName;
+      }
 
       if (data.userID.toString() === this.state.userID.toString()) {
 
@@ -58,24 +62,34 @@ export class Controller {
 
       view.showField();
       this.startGame();
-      this.resetGame();
     };
 
     server.on[messages.startGame] = (data) => {
-      if (data.userID === this.state.userID) return;
+      console.log(messages.startGame, data);
+      this.resetGame();
 
       console.log(messages.startGame, data);
+      this.state.currentMove = data.currentMove;
+
+      view.setTurn(data.currentMove, data.userName);
+
+      if (data.userID === this.state.userID) {
+        view.unblockCells();
+      } else if (data.userID !== this.state.userID) {
+        view.blockCells();
+        this.state.playerWalks = data.userName;
+      }
+
+      if (data.userID === this.state.userID) return;
+
       view.hideMessageURL();
 
       view.showMessage(`${data.userName} joined game`);
       setTimeout(() => view.hideMessage(), 3000);
 
-      this.state.currentMove = data.currentMove;
 
-      view.setTurn(data.currentMove);
       view.showField();
-      this.resetGame();
-      console.log(messages.startGame, data);
+
     };
 
     server.on[messages.stateUpdate] = (data) => this.onStateUpdated(data);
@@ -86,6 +100,8 @@ export class Controller {
   }
 
   onStateUpdated(data) {
+   
+
     console.log("onStateUpdated", data);
 
     this.state.game = data.state.game;
@@ -99,28 +115,27 @@ export class Controller {
 
     this.switchStep();
 
-
-    view.setTurn(this.state.game.currentMove);
-
-
-    this.checkDraw();
-    this.checkWin();
-
-    this.saveGameState();
-
     if (this.state.userName === data.state.userName) {
       console.log(`User on clicked`);
       this.blockCells();
       view.blockCells();
 
+      view.setTurn(this.state.game.currentMove, this.state.playerWalks);
+
     } else if (this.state.userName !== data.state.userName) {
       console.log("change");
-      this.oppenCells();
-      view.oppenCells();
+      this.unblockCells();
+      view.unblockCells();
+
+      view.setTurn(this.state.game.currentMove, this.state.userName);
     }
 
     console.log('jj', this.state.userID, this.state.userName);
 
+    this.checkDraw(data);
+    this.checkWin(data);
+
+    this.saveGameState();
   }
 
   blockCells() {
@@ -134,7 +149,7 @@ export class Controller {
     });
   }
 
-  oppenCells() {
+  unblockCells() {
     this.state.game.cellsData.forEach((cell, index) => {
       if (this.state.game.cellsData[index] !== "x" &&
         this.state.game.cellsData[index] !== "o") {
@@ -252,8 +267,8 @@ export class Controller {
     document.body.removeChild(textarea);
 
     view.showMessageURLcopied();
-      setTimeout(() => view.hideMessageURLcopied(), 2000);
-    
+    setTimeout(() => view.hideMessageURLcopied(), 2000);
+
   }
 
   switchStep() {
@@ -281,19 +296,20 @@ export class Controller {
     });
   }
 
-  checkWin() {
+  checkWin(data) {
     const winner = this.getWinner();
 
     if (!winner) {
       return;
     }
 
+    console.log(data);
+
     view.setWin();
-    view.setComment(this.state.game.cellsData);
-    view.setWinText(winner);
+    view.setWinText(data.state.userName);
     this.state.game.cellsData.fill("full");
 
-    setTimeout(() => this.resetGame(), 5000);
+    setTimeout(() => this.resetWinningGame(data), 5000);
     console.log(`winner: ${winner}`);
   }
 
@@ -336,7 +352,7 @@ export class Controller {
     return false;
   }
 
-  checkDraw() {
+  checkDraw(data) {
     for (let i = 0; i < this.state.game.cellsData.length; i++) {
       if (
         this.state.game.cellsData[i] !== "x" &&
@@ -348,9 +364,31 @@ export class Controller {
     console.log("DRAW");
 
     view.setDraw();
-    view.setComment(this.state.game.currentMove);
 
-    setTimeout(() => this.resetGame(), 5000);
+    setTimeout(() => this.resetWinningGame(data), 5000);
+  }
+
+  resetWinningGame(data) {
+    this.state.game.cellsData = new Array(9).fill("empty");
+
+    this.saveGameState();
+    view.clearCells();
+    
+
+    if (this.state.userName === data.state.userName) {
+      this.unblockCells();
+      view.unblockCells();
+
+      view.setTurn(this.state.game.currentMove, this.state.userName);
+
+    } else if (this.state.userName !== data.state.userName) {
+      this.blockCells();
+      view.blockCells();
+
+      view.setTurn(this.state.game.currentMove, this.state.playerWalks);
+    }
+
+    console.log("resetGame");
   }
 
   resetGame() {
@@ -358,6 +396,6 @@ export class Controller {
 
     this.saveGameState();
     view.clearCells();
-    console.log("resetGame", this.state.game.cellsData);
+    console.log("resetGame");
   }
 }

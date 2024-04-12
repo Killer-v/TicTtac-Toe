@@ -39,7 +39,7 @@ export class View {
     this.hideField();
   }
 
-  createMessageURLcopied () {
+  createMessageURLcopied() {
     this.messageURLcopied = createDiv("messageURLcopied");
     this.messageURLcopied.innerHTML = "URL Copied ! ";
     this.messageURLcopied.classList.add("displayNone");
@@ -97,6 +97,7 @@ export class View {
   }
 
   blockCells() {
+   
     this.cells.forEach(cell => {
       if (!cell.classList.contains('empty')) {
         cell.classList.add("block");
@@ -104,7 +105,8 @@ export class View {
     });
   }
 
-  oppenCells() {
+  unblockCells() {
+   
     this.cells.forEach(cell => {
       if (!cell.classList.contains('empty')) {
         cell.classList.remove("block");
@@ -112,28 +114,24 @@ export class View {
     });
   }
 
-  setTurn(turn) {
+  setWinText(winName) {
+    this.turnPointer.innerHTML = `Win ${winName}`;
+    this.comments.innerHTML = "";
+    console.log("setWinText");
+  }
+
+  setTurn(turn, player) {
     if (turn === "x") {
-      this.turnPointer.innerHTML = "X Turn";
+      this.turnPointer.innerHTML = `Walks ${player}`;
+      this.comments.innerHTML = `X Turn`
     } else if (turn === "o") {
-      this.turnPointer.innerHTML = "O Turn";
+      this.turnPointer.innerHTML = `Walks ${player}`;
+      this.comments.innerHTML = `O Turn`
     }
   }
 
-  setComment(turn) {
-    if (turn === "x") {
-      this.comments.innerHTML = "Next turn X";
-    } else if (turn === "o") {
-      this.comments.innerHTML = "Next turn O";
-    }
-  }
-
-  setWinText(winSymbol) {
-    if (winSymbol === "x") {
-      this.turnPointer.innerHTML = "X Won!";
-    } else if (winSymbol === "o") {
-      this.turnPointer.innerHTML = "O Won!";
-    }
+  setWin() {
+    this.parent.classList.add("win");
   }
 
   setStyle(style) {
@@ -155,12 +153,9 @@ export class View {
     }
   }
 
-  setWin() {
-    this.parent.classList.add("win");
-  }
-
   setDraw() {
     this.turnPointer.innerHTML = "Draw!";
+    this.comments.innerHTML = "";
     this.parent.classList.add("draw");
   }
 
@@ -171,7 +166,6 @@ export class View {
     }
 
     this.parent.classList.remove("win", "draw");
-    this.comments.innerHTML = "";
 
     console.log("clear");
   }
@@ -222,11 +216,11 @@ export class View {
     this.messageURL.classList.remove("displayNone");
   }
 
-  showMessageURLcopied () {
+  showMessageURLcopied() {
     this.messageURLcopied.classList.remove("displayNone");
   }
 
-  hideMessageURLcopied () {
+  hideMessageURLcopied() {
     this.messageURLcopied.classList.add("displayNone");
   }
 
